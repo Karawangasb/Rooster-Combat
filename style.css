@@ -1,0 +1,122 @@
+﻿/* Reset dasar */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: url("background.png") no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: white;
+}
+
+#game {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 15px;
+  padding: 10px;
+  text-align: center;
+  position: relative;
+}
+
+header {
+  margin-bottom: 10px;
+}
+
+.logo {
+  width: 60px;
+  height: auto;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+#tapArea {
+  margin: 15px 0;
+  cursor: pointer;
+}
+
+#rooster {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 3px solid white;
+  object-fit: cover;
+}
+
+#menuArea {
+  display: none;
+  margin-top: 15px;
+}
+
+#menuArea.active {
+  display: block;
+}
+
+#menuContent {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Upgrade cards */
+.upgrade-item {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #ddd;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.upgrade-item button {
+  background: #ffcc00;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.upgrade-item button:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+
+/* Bottom nav */
+#nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-width: 500px;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  border-radius: 15px 15px 0 0;
+}
+
+#nav button {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  background: #ffcc00;
+  cursor: pointer;
+}
