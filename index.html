@@ -21,7 +21,7 @@
     }
 
     h1 {
-      color: #fff; /* pakai putih biar kontras sama background */
+      color: #fff;
       text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
       margin-bottom: 20px;
     }
@@ -29,8 +29,10 @@
     #tapArea {
       width: 250px;
       height: 250px;
-      background: url('logo.png') no-repeat center/cover;
       border-radius: 50%;
+      overflow: hidden;
+      clip-path: circle(50%);
+      background: url('logo.png') no-repeat center/cover;
       box-shadow: 0 0 30px rgba(0,0,0,0.5);
       cursor: pointer;
       transition: transform 0.1s ease;
@@ -47,6 +49,31 @@
       color: #fff;
       text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
     }
+
+    /* Menu area */
+    #menu {
+      position: absolute;
+      bottom: 30px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .menu-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.8);
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: all 0.2s;
+    }
+
+    .menu-btn:hover {
+      background: #f1c40f;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -54,15 +81,34 @@
   <div id="tapArea"></div>
   <div id="score">0 🥚</div>
 
+  <!-- Menu -->
+  <div id="menu">
+    <button class="menu-btn" id="resetBtn">🔄 Reset</button>
+    <button class="menu-btn" id="aboutBtn">ℹ️ About</button>
+  </div>
+
   <script>
     let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 0;
     const scoreEl = document.getElementById("score");
     scoreEl.innerText = score + " 🥚";
 
-    document.getElementById("tapArea").addEventListener("click", () => {
+    const tapArea = document.getElementById("tapArea");
+    tapArea.addEventListener("click", () => {
       score++;
       scoreEl.innerText = score + " 🥚";
       localStorage.setItem("score", score);
+    });
+
+    // Reset button
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      score = 0;
+      scoreEl.innerText = "0 🥚";
+      localStorage.setItem("score", score);
+    });
+
+    // About button
+    document.getElementById("aboutBtn").addEventListener("click", () => {
+      alert("🐔 RoosterFi Tap Game\n\nTap ayam sebanyak mungkin untuk kumpulkan telur (🥚).");
     });
   </script>
 </body>
