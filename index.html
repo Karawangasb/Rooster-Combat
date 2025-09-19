@@ -1,64 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RoosterFi Tap</title>
+  <title>RoosterFi Tap 🐔</title>
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      text-align: center;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: url('background.png') no-repeat center center fixed;
       background-size: cover;
-      font-family: Arial, sans-serif;
       color: white;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      overflow-x: hidden;
     }
+
     h1 {
-      margin-top: 10px;
+      font-size: 2.5rem;
+      margin: 15px 0;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      animation: fadeInDown 0.8s ease-out;
     }
+
     #tapArea {
-      width: 150px;
-      height: 150px;
-      margin: 20px auto;
+      width: 200px;
+      height: 200px;
+      margin: 30px auto;
       border-radius: 50%;
       background: url('logo.png') no-repeat center center;
-      background-size: cover;
+      background-size: 80%;
+      background-color: rgba(255,255,255,0.1);
       cursor: pointer;
       position: relative;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      transition: transform 0.1s, box-shadow 0.2s;
+      user-select: none;
     }
+
+    #tapArea:active {
+      transform: scale(0.95);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    #tapArea:hover {
+      transform: scale(1.05);
+      transition: transform 0.2s;
+    }
+
     #score {
-      font-size: 24px;
-      margin-top: 60px; /* 🔽 tambah jarak ke bawah */
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 20px 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      transition: all 0.3s ease;
     }
+
     .egg {
       position: absolute;
-      font-size: 20px;
-      animation: floatUp 1s ease-out forwards;
+      font-size: 1.5rem;
+      pointer-events: none;
+      animation: floatUp 1s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+      z-index: 10;
     }
+
     @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-80px); }
+      0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+      100% { opacity: 0; transform: translateY(-100px) rotate(20deg); }
     }
-    /* Menu bawah */
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Menu Bawah */
     #menu {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      background: rgba(0,0,0,0.5);
-      padding: 10px;
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,0.7));
+      backdrop-filter: blur(10px);
+      padding: 15px 10px;
       display: flex;
       justify-content: space-around;
+      gap: 10px;
+      z-index: 100;
     }
+
     #menu button {
-      padding: 8px 16px;
+      flex: 1;
+      max-width: 120px;
+      padding: 12px 8px;
       border: none;
-      border-radius: 12px;
-      background: orange;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #FFA500, #FF8C00);
       color: white;
       font-weight: bold;
+      font-size: 0.9rem;
       cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    #menu button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+
+    #menu button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    /* Responsif */
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      #tapArea { width: 160px; height: 160px; }
+      #score { font-size: 1.8rem; }
+      #menu button { font-size: 0.85rem; padding: 10px 6px; }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 1.7rem; }
+      #tapArea { width: 140px; height: 140px; }
+      #score { font-size: 1.5rem; margin-top: 10px; }
+      #menu button { font-size: 0.8rem; padding: 8px 4px; max-width: 100px; }
     }
   </style>
 </head>
@@ -69,30 +153,82 @@
   <div id="score">0 🥚</div>
 
   <div id="menu">
-    <button>🏆 Leaderboard</button>
-    <button>💰 Withdraw</button>
-    <button>📥 Deposit</button>
+    <button id="btnLeaderboard">🏆 Leaderboard</button>
+    <button id="btnWithdraw">💰 Withdraw</button>
+    <button id="btnDeposit">📥 Deposit</button>
   </div>
 
+  <!-- Opsional: Audio -->
+  <audio id="clickSound" src="https://www.soundjay.com/button/sounds/button-09.mp3" preload="auto"></audio>
+
   <script>
+    // State
     let score = 0;
+
+    // DOM Elements
     const tapArea = document.getElementById("tapArea");
     const scoreDisplay = document.getElementById("score");
+    const clickSound = document.getElementById("clickSound");
 
-    tapArea.addEventListener("click", (e) => {
-      score++;
-      scoreDisplay.textContent = score + " 🥚";
-
-      // efek telur keluar
+    // Utility: Create floating egg
+    function createEgg(x, y) {
       const egg = document.createElement("div");
       egg.textContent = "🥚";
       egg.className = "egg";
-      egg.style.left = (e.offsetX - 10) + "px";
-      egg.style.top = (e.offsetY - 10) + "px";
+      egg.style.left = `${x - 15}px`;
+      egg.style.top = `${y - 15}px`;
       tapArea.appendChild(egg);
 
-      setTimeout(() => egg.remove(), 1000);
+      // Auto remove after animation
+      setTimeout(() => {
+        if (egg && egg.parentNode) {
+          egg.remove();
+        }
+      }, 1000);
+    }
+
+    // Handle Tap
+    tapArea.addEventListener("click", function(e) {
+      // Play sound (optional)
+      if (clickSound) {
+        clickSound.currentTime = 0;
+        clickSound.play().catch(e => console.log("Audio play failed:", e));
+      }
+
+      // Update score
+      score++;
+      scoreDisplay.textContent = `${score} 🥚`;
+
+      // Create visual feedback
+      createEgg(e.offsetX, e.offsetY);
+
+      // Optional: Vibrate on mobile
+      if ("vibrate" in navigator) {
+        navigator.vibrate(50);
+      }
     });
+
+    // Button Actions (placeholder)
+    document.getElementById("btnLeaderboard").addEventListener("click", () => {
+      alert("🏆 Leaderboard coming soon!");
+    });
+
+    document.getElementById("btnWithdraw").addEventListener("click", () => {
+      alert("💰 Withdraw feature under development.");
+    });
+
+    document.getElementById("btnDeposit").addEventListener("click", () => {
+      alert("📥 Deposit feature under development.");
+    });
+
+    // Optional: Reset score with secret double-click
+    /*
+    tapArea.addEventListener("dblclick", () => {
+      score = 0;
+      scoreDisplay.textContent = "0 🥚";
+      alert("Score reset!");
+    });
+    */
   </script>
 </body>
 </html>
