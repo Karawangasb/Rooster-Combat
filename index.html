@@ -8,161 +8,90 @@
     body {
       margin: 0;
       padding: 0;
-      height: 100vh;
+      text-align: center;
       background: url('background.png') no-repeat center center fixed;
       background-size: cover;
       font-family: Arial, sans-serif;
-      user-select: none;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
+      color: white;
     }
-
-    /* Bagian atas (judul + game + skor) */
-    #gameContainer {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding-top: 40px; /* jarak dari atas */
-    }
-
     h1 {
-      color: #fff;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
-      margin-bottom: 20px;
+      margin-top: 10px;
     }
-
     #tapArea {
-      width: 250px;
-      height: 250px;
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
       border-radius: 50%;
-      overflow: hidden;
-      clip-path: circle(50%);
-      background: url('logo.png') no-repeat center/cover;
-      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      background: url('logo.png') no-repeat center center;
+      background-size: cover;
       cursor: pointer;
-      transition: transform 0.1s ease;
+      position: relative;
     }
-
-    #tapArea:active {
-      transform: scale(0.9);
-    }
-
     #score {
-      margin-top: 20px;
-      font-size: 2.5em;
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+      font-size: 24px;
+      margin-top: 60px; /* 🔽 tambah jarak ke bawah */
     }
-
-    /* Menu area (bawah) */
-    #menu {
-      margin-bottom: 20px;
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .menu-btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.85);
-      font-size: 1em;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: all 0.2s;
-    }
-
-    .menu-btn:hover {
-      background: #f1c40f;
-      transform: scale(1.05);
-    }
-
-    /* Telur animasi */
     .egg {
       position: absolute;
-      font-size: 1.5em;
+      font-size: 20px;
       animation: floatUp 1s ease-out forwards;
-      pointer-events: none;
     }
-
     @keyframes floatUp {
-      0% { transform: translateY(0); opacity: 1; }
-      100% { transform: translateY(-120px); opacity: 0; }
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-80px); }
+    }
+    /* Menu bawah */
+    #menu {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      padding: 10px;
+      display: flex;
+      justify-content: space-around;
+    }
+    #menu button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 12px;
+      background: orange;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <!-- Game area -->
-  <div id="gameContainer">
-    <h1>🐔 RoosterFi Tap</h1>
-    <div id="tapArea"></div>
-    <div id="score">0 🥚</div>
-  </div>
+  <h1>🐔 RoosterFi Tap</h1>
+  
+  <div id="tapArea"></div>
+  <div id="score">0 🥚</div>
 
-  <!-- Menu bawah -->
   <div id="menu">
-    <button class="menu-btn" id="resetBtn">🔄 Reset</button>
-    <button class="menu-btn" id="aboutBtn">ℹ️ About</button>
-    <button class="menu-btn" id="leaderboardBtn">🏆 Leaderboard</button>
-    <button class="menu-btn" id="shopBtn">🛒 Shop</button>
-    <button class="menu-btn" id="withdrawBtn">💸 Withdraw</button>
+    <button>🏆 Leaderboard</button>
+    <button>💰 Withdraw</button>
+    <button>📥 Deposit</button>
   </div>
 
   <script>
-    let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 0;
-    const scoreEl = document.getElementById("score");
-    scoreEl.innerText = score + " 🥚";
-
+    let score = 0;
     const tapArea = document.getElementById("tapArea");
-
-    function spawnEgg(x, y) {
-      const egg = document.createElement("div");
-      egg.className = "egg";
-      egg.style.left = x - 10 + "px";
-      egg.style.top = y - 20 + "px";
-      egg.innerText = "🥚";
-      document.body.appendChild(egg);
-      setTimeout(() => egg.remove(), 1000);
-    }
+    const scoreDisplay = document.getElementById("score");
 
     tapArea.addEventListener("click", (e) => {
       score++;
-      scoreEl.innerText = score + " 🥚";
-      localStorage.setItem("score", score);
+      scoreDisplay.textContent = score + " 🥚";
 
-      const x = e.clientX;
-      const y = e.clientY;
-      spawnEgg(x, y);
-    });
+      // efek telur keluar
+      const egg = document.createElement("div");
+      egg.textContent = "🥚";
+      egg.className = "egg";
+      egg.style.left = (e.offsetX - 10) + "px";
+      egg.style.top = (e.offsetY - 10) + "px";
+      tapArea.appendChild(egg);
 
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      score = 0;
-      scoreEl.innerText = "0 🥚";
-      localStorage.setItem("score", score);
-    });
-
-    document.getElementById("aboutBtn").addEventListener("click", () => {
-      alert("🐔 RoosterFi Tap Game\n\nTap ayam sebanyak mungkin untuk kumpulkan telur (🥚). Token: ROOFI di Polygon.");
-    });
-
-    document.getElementById("leaderboardBtn").addEventListener("click", () => {
-      alert("🏆 Leaderboard\n\nFitur ini akan aktif setelah integrasi ke server.");
-    });
-
-    document.getElementById("shopBtn").addEventListener("click", () => {
-      alert("🛒 Shop\n\nDi sini nanti kamu bisa beli upgrade dengan ROOFI.");
-    });
-
-    document.getElementById("withdrawBtn").addEventListener("click", () => {
-      alert("💸 Withdraw\n\nHubungi admin untuk klaim saldo ROOFI secara manual.");
+      setTimeout(() => egg.remove(), 1000);
     });
   </script>
 </body>
