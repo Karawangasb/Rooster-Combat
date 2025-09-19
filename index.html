@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RoosterFi Tap Game</title>
+  <style>
+    body { text-align: center; font-family: Arial; background: #ffe7a1; }
+    #tapArea {
+      width: 200px; height: 200px; margin: 50px auto;
+      background: url('rooster.png') no-repeat center/cover;
+      border-radius: 50%; box-shadow: 0 0 20px #0003; cursor: pointer;
+    }
+    h1 { color: #c0392b; }
+    #score { font-size: 2em; }
+  </style>
+</head>
+<body>
+  <h1>🐔 RoosterFi Tap</h1>
+  <div id="tapArea"></div>
+  <p>Score: <span id="score">0</span> 🥚</p>
+
+  <script>
+    let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 0;
+    document.getElementById("score").innerText = score;
+
+    document.getElementById("tapArea").addEventListener("click", () => {
+      score++;
+      document.getElementById("score").innerText = score;
+      localStorage.setItem("score", score);
+    });
+  </script>
+</body>
+</html>
