@@ -36,6 +36,7 @@
       box-shadow: 0 0 30px rgba(0,0,0,0.5);
       cursor: pointer;
       transition: transform 0.1s ease;
+      position: relative;
     }
 
     #tapArea:active {
@@ -56,13 +57,15 @@
       bottom: 30px;
       display: flex;
       gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .menu-btn {
       padding: 10px 20px;
       border: none;
       border-radius: 10px;
-      background: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.85);
       font-size: 1em;
       font-weight: bold;
       cursor: pointer;
@@ -73,6 +76,19 @@
     .menu-btn:hover {
       background: #f1c40f;
       transform: scale(1.05);
+    }
+
+    /* Telur animasi */
+    .egg {
+      position: absolute;
+      font-size: 1.5em;
+      animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-120px); opacity: 0; }
     }
   </style>
 </head>
@@ -85,6 +101,9 @@
   <div id="menu">
     <button class="menu-btn" id="resetBtn">🔄 Reset</button>
     <button class="menu-btn" id="aboutBtn">ℹ️ About</button>
+    <button class="menu-btn" id="leaderboardBtn">🏆 Leaderboard</button>
+    <button class="menu-btn" id="shopBtn">🛒 Shop</button>
+    <button class="menu-btn" id="withdrawBtn">💸 Withdraw</button>
   </div>
 
   <script>
@@ -93,10 +112,31 @@
     scoreEl.innerText = score + " 🥚";
 
     const tapArea = document.getElementById("tapArea");
-    tapArea.addEventListener("click", () => {
+
+    // Fungsi buat telur animasi
+    function spawnEgg(x, y) {
+      const egg = document.createElement("div");
+      egg.className = "egg";
+      egg.style.left = x - 10 + "px"; // posisi biar pas
+      egg.style.top = y - 20 + "px";
+      egg.innerText = "🥚";
+      document.body.appendChild(egg);
+
+      setTimeout(() => egg.remove(), 1000);
+    }
+
+    // Klik area ayam
+    tapArea.addEventListener("click", (e) => {
       score++;
       scoreEl.innerText = score + " 🥚";
       localStorage.setItem("score", score);
+
+      // Posisi klik relatif
+      const rect = tapArea.getBoundingClientRect();
+      const x = e.clientX;
+      const y = e.clientY;
+
+      spawnEgg(x, y);
     });
 
     // Reset button
@@ -108,7 +148,22 @@
 
     // About button
     document.getElementById("aboutBtn").addEventListener("click", () => {
-      alert("🐔 RoosterFi Tap Game\n\nTap ayam sebanyak mungkin untuk kumpulkan telur (🥚).");
+      alert("🐔 RoosterFi Tap Game\n\nTap ayam sebanyak mungkin untuk kumpulkan telur (🥚). Token: ROOFI di Polygon.");
+    });
+
+    // Leaderboard (dummy)
+    document.getElementById("leaderboardBtn").addEventListener("click", () => {
+      alert("🏆 Leaderboard\n\nFitur ini akan aktif setelah integrasi ke server.");
+    });
+
+    // Shop (dummy)
+    document.getElementById("shopBtn").addEventListener("click", () => {
+      alert("🛒 Shop\n\nDi sini nanti kamu bisa beli upgrade dengan ROOFI.");
+    });
+
+    // Withdraw (dummy)
+    document.getElementById("withdrawBtn").addEventListener("click", () => {
+      alert("💸 Withdraw\n\nHubungi admin untuk klaim saldo ROOFI secara manual.");
     });
   </script>
 </body>
