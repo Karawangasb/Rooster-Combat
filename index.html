@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -39,7 +39,7 @@
       margin: 30px auto;
       border-radius: 50%;
       background: url('logo.png') no-repeat center center;
-      background-size: 80%;
+      background-size: 95%;
       background-color: rgba(255,255,255,0.1);
       cursor: pointer;
       position: relative;
@@ -61,7 +61,7 @@
     #score {
       font-size: 2rem;
       font-weight: bold;
-      margin: 20px 0;
+      margin: 200px 0;
       text-shadow: 0 2px 4px rgba(0,0,0,0.5);
       transition: all 0.3s ease;
     }
@@ -141,25 +141,25 @@
     @media (max-width: 480px) {
       h1 { font-size: 1.7rem; }
       #tapArea { width: 140px; height: 140px; }
-      #score { font-size: 1.5rem; margin-top: 10px; }
+      #score { font-size: 2rem; margin-top: 5px; }
       #menu button { font-size: 0.8rem; padding: 8px 4px; max-width: 100px; }
     }
   </style>
 </head>
 <body>
-  <h1>🐔 RoosterFi Tap</h1>
+  <h1>RoosterFi Tap</h1>
   
   <div id="tapArea"></div>
-  <div id="score">0 🥚</div>
+  <div id="score">0 </div>
 
   <div id="menu">
-    <button id="btnLeaderboard">🏆 Leaderboard</button>
-    <button id="btnWithdraw">💰 Withdraw</button>
-    <button id="btnDeposit">📥 Deposit</button>
+    <button id="btnLeaderboard"> Leaderboard</button>
+    <button id="btnWithdraw">Withdraw</button>
+    <button id="btnDeposit">Deposit</button>
   </div>
 
   <!-- Opsional: Audio -->
-  <audio id="clickSound" src="https://www.soundjay.com/button/sounds/button-09.mp3" preload="auto"></audio>
+  <audio id="clickSound" src="click.mp3" preload="auto"></audio>
 
   <script>
     // State
