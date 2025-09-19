@@ -13,14 +13,16 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      background: linear-gradient(135deg, #ffecd2, #fcb69f);
+      background: url('background.png') no-repeat center center fixed;
+      background-size: cover;
       font-family: Arial, sans-serif;
       user-select: none;
       overflow: hidden;
     }
 
     h1 {
-      color: #c0392b;
+      color: #fff; /* pakai putih biar kontras sama background */
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
       margin-bottom: 20px;
     }
 
@@ -29,7 +31,7 @@
       height: 250px;
       background: url('logo.png') no-repeat center/cover;
       border-radius: 50%;
-      box-shadow: 0 0 30px rgba(0,0,0,0.3);
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
       cursor: pointer;
       transition: transform 0.1s ease;
     }
@@ -42,7 +44,8 @@
       margin-top: 25px;
       font-size: 2.5em;
       font-weight: bold;
-      color: #2c3e50;
+      color: #fff;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
     }
   </style>
 </head>
