@@ -1,30 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>RoosterFi Tap Game</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoosterFi Tap</title>
   <style>
-    body { text-align: center; font-family: Arial; background: #ffe7a1; }
-    #tapArea {
-      width: 200px; height: 200px; margin: 50px auto;
-      background: url('rooster.png') no-repeat center/cover;
-      border-radius: 50%; box-shadow: 0 0 20px #0003; cursor: pointer;
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #ffecd2, #fcb69f);
+      font-family: Arial, sans-serif;
+      user-select: none;
+      overflow: hidden;
     }
-    h1 { color: #c0392b; }
-    #score { font-size: 2em; }
+
+    h1 {
+      color: #c0392b;
+      margin-bottom: 20px;
+    }
+
+    #tapArea {
+      width: 250px;
+      height: 250px;
+      background: url('logo.png') no-repeat center/cover;
+      border-radius: 50%;
+      box-shadow: 0 0 30px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    #tapArea:active {
+      transform: scale(0.9);
+    }
+
+    #score {
+      margin-top: 25px;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #2c3e50;
+    }
   </style>
 </head>
 <body>
   <h1>🐔 RoosterFi Tap</h1>
   <div id="tapArea"></div>
-  <p>Score: <span id="score">0</span> 🥚</p>
+  <div id="score">0 🥚</div>
 
   <script>
     let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 0;
-    document.getElementById("score").innerText = score;
+    const scoreEl = document.getElementById("score");
+    scoreEl.innerText = score + " 🥚";
 
     document.getElementById("tapArea").addEventListener("click", () => {
       score++;
-      document.getElementById("score").innerText = score;
+      scoreEl.innerText = score + " 🥚";
       localStorage.setItem("score", score);
     });
   </script>
