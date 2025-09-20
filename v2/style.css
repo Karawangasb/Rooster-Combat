@@ -1,4 +1,4 @@
-﻿/* Reset & Pengaturan Dasar */
+/* Reset & Pengaturan Dasar */
 * {
   margin: 0;
   padding: 0;
@@ -7,12 +7,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Body: Gunakan tema Telegram + viewport penuh */
+/* Body: Gunakan hanya background.png + warna tema Telegram */
 body {
   background: url("background.png") no-repeat center center fixed;
   background-size: cover;
   color: var(--tg-theme-text-color, white);
-  background-color: var(--tg-theme-bg-color, #1e1e1e);
+  background-color: transparent; /* biarkan gambar jadi latar */
   min-height: 100dvh;
   display: flex;
   justify-content: center;
@@ -22,16 +22,17 @@ body {
   position: relative;
 }
 
-/* Container Utama Game */
+/* Container Utama Game — transparan, hanya pakai shadow & border */
 #game {
   width: 100%;
   max-width: 500px;
-  background: rgba(0, 0, 0, 0.9);
+  background: transparent; /* HAPUS BACKGROUND HITAM */
+  border: 2px solid rgba(255,255,255,0.2);
   border-radius: 18px;
   padding: 20px 15px;
   text-align: center;
   position: relative;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
 
@@ -62,8 +63,9 @@ header {
   font-size: 15px;
   font-weight: bold;
   padding: 8px 0;
-  background: rgba(0,0,0,0.3);
+  background: rgba(255,255,255,0.1); /* overlay putih lembut */
   border-radius: 10px;
+  backdrop-filter: none; /* pastikan tidak ada blur */
 }
 
 /* Tap Area */
@@ -94,26 +96,27 @@ header {
   transform: scale(0.96);
 }
 
-/* Menu Area */
+/* Menu Area — transparan */
 #menuArea {
   display: none;
   margin-top: 20px;
   max-height: 45dvh;
   overflow-y: auto;
   padding: 12px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255,255,255,0.08); /* overlay putih sangat transparan */
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 #menuArea.active {
   display: block;
 }
 
-/* Upgrade Items */
+/* Upgrade Items — transparan */
 .upgrade-item {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
   padding: 14px;
   margin: 10px 0;
   border-radius: 12px;
@@ -122,7 +125,7 @@ header {
   align-items: center;
   font-size: 15px;
   font-weight: 500;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 .upgrade-item button {
@@ -152,19 +155,20 @@ header {
   box-shadow: none;
 }
 
-/* Bottom Navigation */
+/* Bottom Navigation — transparan */
 #nav {
   position: fixed;
   bottom: env(safe-area-inset-bottom);
   left: 0;
   width: 100%;
   max-width: 500px;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(255,255,255,0.1); /* overlay putih transparan */
+  border-top: 1px solid rgba(255,255,255,0.2);
   display: flex;
   justify-content: space-around;
   padding: 14px 8px;
   border-radius: 18px 18px 0 0;
-  box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.3);
   z-index: 10;
 }
 
