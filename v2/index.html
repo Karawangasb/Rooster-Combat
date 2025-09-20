@@ -1,13 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <title>RoosterFi Tap</title>
   <link rel="stylesheet" href="style.css" />
 
   <!-- Telegram Web App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Favicon (opsional) -->
+  <link rel="icon" href="logo.png" type="image/png" />
 </head>
 <body>
   <div id="game">
@@ -15,7 +20,7 @@
     <header>
       <img src="logo.png" alt="Logo" class="logo" />
       <h1>RoosterFi Tap</h1>
-      <h2 id="userName">Loading...</h2> <!-- Nama user dari Telegram -->
+      <h2 id="userName">Loading...</h2>
       <div class="stats">
         <span>Score: <span id="scoreCount">0</span></span>
         <span>/s: <span id="scorePerSec">0</span></span>
@@ -31,7 +36,7 @@
     <!-- MENU AREA -->
     <div id="menuArea">
       <div id="menuContent">
-        <!-- isi dari JS -->
+        <!-- Diisi oleh JavaScript -->
       </div>
     </div>
 
