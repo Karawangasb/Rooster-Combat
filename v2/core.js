@@ -1,9 +1,9 @@
-﻿// core.js - versi Telegram Mini App
+﻿// core.js - versi Telegram Mini App + Navigasi Dinamis
 
 let score = 0;
 let tapPower = 1;
 let autoPower = 0;
-let lastPlayed = Date.now(); // untuk hitung offline income
+let lastPlayed = Date.now();
 
 // DOM Elements
 const scoreCount = document.getElementById("scoreCount");
@@ -13,6 +13,7 @@ const rooster = document.getElementById("rooster");
 const clickSound = document.getElementById("clickSound");
 const menuArea = document.getElementById("menuArea");
 const menuContent = document.getElementById("menuContent");
+const pageTitle = document.getElementById("pageTitle");
 
 // Navigation buttons
 document.getElementById("btnPlay").addEventListener("click", () => showMenu("play"));
@@ -26,7 +27,7 @@ tapArea.addEventListener("click", () => {
   updateUI();
   if (clickSound) {
     clickSound.currentTime = 0;
-    clickSound.play().catch(e => console.log("Audio play failed:", e)); // aman jika gagal
+    clickSound.play().catch(e => console.log("Audio play failed:", e));
   }
 });
 
@@ -42,34 +43,51 @@ function updateUI() {
   scorePerSec.textContent = autoPower;
 }
 
-// Tampilkan menu
+// Tampilkan menu / ganti tampilan
 function showMenu(type) {
-  menuArea.classList.add("active");
-  menuContent.innerHTML = "";
+  // Sembunyikan semua konten utama
+  tapArea.style.display = "none";
+  menuArea.style.display = "none";
 
+  // Tampilkan sesuai pilihan
   if (type === "play") {
-    menuArea.classList.remove("active");
+    tapArea.style.display = "block";
+    pageTitle.textContent = "RoosterFi Tap";
   } else if (type === "upgrades") {
+    menuArea.style.display = "block";
     renderUpgrades();
+    pageTitle.textContent = "🛠 Upgrades";
   } else if (type === "stats") {
+    menuArea.style.display = "block";
     menuContent.innerHTML = `
-      <h3>Stats</h3>
-      <p>Total Score: ${Math.floor(score)}</p>
-      <p>Tap Power: ${tapPower}</p>
-      <p>Auto Power: ${autoPower}/s</p>
-      <p>Time Played: ${Math.floor((Date.now() - lastPlayed) / 1000)}s since last load</p>
+      <h3>📊 Stats</h3>
+      <p><strong>Total Score:</strong> ${Math.floor(score)}</p>
+      <p><strong>Tap Power:</strong> ${tapPower}</p>
+      <p><strong>Auto Power:</strong> ${autoPower}/s</p>
+      <p><strong>Time Played:</strong> ${Math.floor((Date.now() - lastPlayed) / 1000)}s since last load</p>
     `;
+    pageTitle.textContent = "📊 Stats";
   } else if (type === "settings") {
+    menuArea.style.display = "block";
     menuContent.innerHTML = `
-      <h3>Settings</h3>
-      <button onclick="resetGame()">Reset Game</button>
+      <h3>⚙️ Settings</h3>
+      <button onclick="resetGame()">🗑️ Reset Game</button>
+      <p style="margin-top: 15px; font-size: 12px; color: #aaa;">
+        Game data is saved to Telegram Cloud.
+      </p>
     `;
+    pageTitle.textContent = "⚙️ Settings";
+  }
+
+  // Simpan state saat navigasi (opsional)
+  if (typeof saveGameState === 'function') {
+    saveGameState();
   }
 }
 
 // Render daftar upgrade
 function renderUpgrades() {
-  menuContent.innerHTML = "<h3>Upgrades</h3>";
+  menuContent.innerHTML = "<h3>🛠 Upgrades</h3>";
   upgrades.forEach((u) => {
     const item = document.createElement("div");
     item.className = "upgrade-item";
@@ -89,7 +107,7 @@ function buyUpgrade(upg) {
     upg.owned++;
     if (upg.effect.tap) tapPower += upg.effect.tap;
     if (upg.effect.auto) autoPower += upg.effect.auto;
-    upg.cost = Math.floor(upg.cost * 1.5); // naikkan harga
+    upg.cost = Math.floor(upg.cost * 1.5);
     updateUI();
     renderUpgrades();
 
@@ -117,7 +135,7 @@ function resetGame() {
       }
     });
   } else {
-    // Fallback jika bukan di Telegram (misal: buka di browser biasa)
+    // Fallback jika bukan di Telegram
     if (confirm("Reset game? All progress will be lost.")) {
       performReset();
     }
@@ -132,10 +150,10 @@ function performReset() {
   lastPlayed = Date.now();
   upgrades.forEach((u) => {
     u.owned = 0;
-    u.cost = u.baseCost || u.cost; // kembalikan ke harga awal
+    u.cost = u.baseCost || u.cost;
   });
   updateUI();
-  menuArea.classList.remove("active");
+  showMenu("play"); // kembali ke layar utama
 
   // Simpan state reset
   if (typeof saveGameState === 'function') {

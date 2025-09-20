@@ -11,7 +11,7 @@
   <!-- Telegram Web App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- Favicon (opsional) -->
+  <!-- Favicon -->
   <link rel="icon" href="logo.png" type="image/png" />
 </head>
 <body>
@@ -19,7 +19,7 @@
     <!-- HEADER -->
     <header>
       <img src="logo.png" alt="Logo" class="logo" />
-      <h1>RoosterFi Tap</h1>
+      <h1 id="pageTitle">RoosterFi Tap</h1>
       <h2 id="userName">Loading...</h2>
       <div class="stats">
         <span>Score: <span id="scoreCount">0</span></span>
@@ -27,20 +27,20 @@
       </div>
     </header>
 
-    <!-- TAP AREA -->
+    <!-- TAP AREA (default view) -->
     <div id="tapArea">
       <img src="logo.png" alt="Rooster" id="rooster" />
       <p>Tap the rooster!</p>
     </div>
 
-    <!-- MENU AREA -->
+    <!-- MENU AREA (sembunyikan default) -->
     <div id="menuArea">
       <div id="menuContent">
         <!-- Diisi oleh JavaScript -->
       </div>
     </div>
 
-    <!-- NAVIGATION -->
+    <!-- NAVIGASI BAWAH -->
     <nav id="nav">
       <button id="btnPlay">Play</button>
       <button id="btnUpgrades">Upgrades</button>
