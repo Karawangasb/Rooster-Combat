@@ -1,9 +1,10 @@
-﻿// core.js - versi Telegram Mini App + Navigasi Dinamis
+﻿// core.js - versi Telegram Mini App + Navigasi Dinamis + Musik Latar
 
 let score = 0;
 let tapPower = 1;
 let autoPower = 0;
 let lastPlayed = Date.now();
+let isMusicPlaying = false;
 
 // DOM Elements
 const scoreCount = document.getElementById("scoreCount");
@@ -11,6 +12,7 @@ const scorePerSec = document.getElementById("scorePerSec");
 const tapArea = document.getElementById("tapArea");
 const rooster = document.getElementById("rooster");
 const clickSound = document.getElementById("clickSound");
+const bgMusic = document.getElementById("bgMusic");
 const menuArea = document.getElementById("menuArea");
 const menuContent = document.getElementById("menuContent");
 const pageTitle = document.getElementById("pageTitle");
@@ -21,13 +23,39 @@ document.getElementById("btnUpgrades").addEventListener("click", () => showMenu(
 document.getElementById("btnStats").addEventListener("click", () => showMenu("stats"));
 document.getElementById("btnSettings").addEventListener("click", () => showMenu("settings"));
 
-// Tap handler
+// Musik latar — kontrol ON/OFF
+document.getElementById("btnMusic")?.addEventListener("click", () => {
+  if (!bgMusic) return;
+
+  if (isMusicPlaying) {
+    bgMusic.pause();
+    document.getElementById("btnMusic").textContent = "🔇 Music: OFF";
+  } else {
+    bgMusic.play().catch(e => console.log("Gagal play musik:", e));
+    document.getElementById("btnMusic").textContent = "🔊 Music: ON";
+  }
+  isMusicPlaying = !isMusicPlaying;
+});
+
+// Tap handler — mulai musik saat pertama kali tap
 tapArea.addEventListener("click", () => {
   score += tapPower;
   updateUI();
+
+  // Mainkan efek suara tap
   if (clickSound) {
     clickSound.currentTime = 0;
-    clickSound.play().catch(e => console.log("Audio play failed:", e));
+    clickSound.play().catch(e => console.log("Audio tap gagal:", e));
+  }
+
+  // Mainkan musik latar jika belum main
+  if (!isMusicPlaying && bgMusic) {
+    bgMusic.volume = 0.3; // jangan terlalu keras
+    bgMusic.play().catch(e => console.log("Musik latar gagal:", e));
+    isMusicPlaying = true;
+    if (document.getElementById("btnMusic")) {
+      document.getElementById("btnMusic").textContent = "🔊 Music: ON";
+    }
   }
 });
 
@@ -43,13 +71,13 @@ function updateUI() {
   scorePerSec.textContent = autoPower;
 }
 
-// Tampilkan menu / ganti tampilan
+// Tampilkan menu / ganti konten dinamis (header tetap tampil)
 function showMenu(type) {
-  // Sembunyikan semua konten utama
+  // Sembunyikan hanya konten dinamis
   tapArea.style.display = "none";
   menuArea.style.display = "none";
 
-  // Tampilkan sesuai pilihan
+  // Tampilkan konten sesuai pilihan
   if (type === "play") {
     tapArea.style.display = "block";
     pageTitle.textContent = "RoosterFi Tap";
@@ -60,11 +88,11 @@ function showMenu(type) {
   } else if (type === "stats") {
     menuArea.style.display = "block";
     menuContent.innerHTML = `
-      <h3>📊 Stats</h3>
+      <h3>📊 Your Stats</h3>
       <p><strong>Total Score:</strong> ${Math.floor(score)}</p>
       <p><strong>Tap Power:</strong> ${tapPower}</p>
       <p><strong>Auto Power:</strong> ${autoPower}/s</p>
-      <p><strong>Time Played:</strong> ${Math.floor((Date.now() - lastPlayed) / 1000)}s since last load</p>
+      <p><strong>Time Played:</strong> ${Math.floor((Date.now() - lastPlayed) / 1000)}s</p>
     `;
     pageTitle.textContent = "📊 Stats";
   } else if (type === "settings") {
@@ -73,13 +101,13 @@ function showMenu(type) {
       <h3>⚙️ Settings</h3>
       <button onclick="resetGame()">🗑️ Reset Game</button>
       <p style="margin-top: 15px; font-size: 12px; color: #aaa;">
-        Game data is saved to Telegram Cloud.
+        Data saved to Telegram Cloud.
       </p>
     `;
     pageTitle.textContent = "⚙️ Settings";
   }
 
-  // Simpan state saat navigasi (opsional)
+  // Simpan state
   if (typeof saveGameState === 'function') {
     saveGameState();
   }
