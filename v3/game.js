@@ -455,47 +455,70 @@ if (editNameBtn) {
   // ========================
 
   async function saveGame() {
-    if (!currentUserId || !gameState) return;
-    try {
-      const gameStateRef = doc(db, "users", currentUserId);
-      await setDoc(gameStateRef, { 
-        ...gameState, 
-        quests,
-        lastStakeUpdate: gameState.lastStakeUpdate,
-        name: `Player-${currentUserId.slice(2, 8)}`
-      }, { merge: true });
-    } catch (err) {
-      console.error("❌ Save error:", err);
-    }
+  if (!currentUserId || !gameState) return;
+  try {
+    const gameStateRef = doc(db, "users", currentUserId);
+    // Jangan timpa `name` — biarkan nilai saat ini
+    await setDoc(gameStateRef, { 
+      ...gameState, 
+      quests,
+      lastStakeUpdate: gameState.lastStakeUpdate
+      // ❌ HAPUS baris: name: `Player-...`
+    }, { merge: true });
+  } catch (err) {
+    console.error("❌ Save error:", err);
   }
+}
 
   async function loadGame() {
-    if (!currentUserId) return;
-    try {
-      const gameStateRef = doc(db, "users", currentUserId);
-      const snap = await getDoc(gameStateRef);
-      const defaultState = {
-        troBalance: 0,
-        energy: 100,
-        energyMax: 100,
-        growPower: 0.1,
-        energyCost: 1,
-        rechargeRate: 1,
-        upgrades: {
-          capacity: { level: 1, cost: 5 },
-          power: { level: 1, cost: 5 },
-          speed: { level: 1, cost: 7 }
-        },
-        stakedAmount: 0,
-        lastStakeUpdate: Date.now(),
-        lastUpdate: Date.now(),
-        totalTaps: 0,
-        totalUpgrades: 0,
-        name: `Player-${currentUserId.slice(2, 8)}`
-      };
+  if (!currentUserId) return;
+  try {
+    const gameStateRef = doc(db, "users", currentUserId);
+    const snap = await getDoc(gameStateRef);
+    const defaultState = {
+      troBalance: 0,
+      energy: 100,
+      energyMax: 100,
+      growPower: 0.1,
+      energyCost: 1,
+      rechargeRate: 1,
+      upgrades: {
+        capacity: { level: 1, cost: 5 },
+        power: { level: 1, cost: 5 },
+        speed: { level: 1, cost: 7 }
+      },
+      stakedAmount: 0,
+      lastStakeUpdate: Date.now(),
+      lastUpdate: Date.now(),
+      totalTaps: 0,
+      totalUpgrades: 0,
+      name: `Player-${currentUserId.slice(2, 8)}`
+    };
 
-      if (playerNameDisplay) {
-  playerNameDisplay.textContent = gameState.name || `Player-${currentUserId.slice(2, 8)}`;
+    const defaultQuests = {
+      tap100: { target: 100, reward: 10, completed: false },
+      upgrade3: { target: 3, reward: 25, completed: false },
+      stake50: { target: 50, reward: 5, completed: false }
+    };
+
+    if (snap.exists()) {
+      const data = snap.data();
+      gameState = { ...defaultState, ...data };
+      quests = { ...defaultQuests, ...data.quests };
+      gameState.lastStakeUpdate = data.lastStakeUpdate || Date.now();
+    } else {
+      gameState = defaultState;
+      quests = defaultQuests;
+      await setDoc(gameStateRef, { ...gameState, quests, lastStakeUpdate: gameState.lastStakeUpdate });
+    }
+
+    // ✅ UPDATE NAMA DI SINI — SETELAH gameState SIAP
+    if (playerNameDisplay) {
+      playerNameDisplay.textContent = gameState.name || `Player-${currentUserId.slice(2, 8)}`;
+    }
+  } catch (err) {
+    console.error("❌ Load error:", err);
+  }
 }
 
       const defaultQuests = {
