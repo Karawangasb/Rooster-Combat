@@ -69,13 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      // Request account access
       const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
       const address = accounts[0].toLowerCase();
-
-      // Pastikan jaringan Polygon (opsional: bisa dilewati untuk demo)
-      // Anda bisa tambahkan pengecekan chainId jika perlu
-
       currentUserId = address;
       walletAddressEl.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
       connectBtn.textContent = "Connected";
@@ -92,42 +87,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
   connectBtn.addEventListener("click", connectWallet);
 
-  // --- Fungsi ganti nama ---
-async function changePlayerName() {
-  if (!currentUserId) {
-    showNotification("Connect wallet first!");
-    return;
-  }
+  // ========================
+  // --- CHANGE PLAYER NAME ---
+  // ========================
 
-  const newName = prompt("Enter your new name (2-15 characters):", gameState.name || "");
-  
-  if (!newName || newName.trim().length < 2 || newName.trim().length > 15) {
-    showNotification("Name must be 2-15 characters!");
-    return;
-  }
+  async function changePlayerName() {
+    if (!currentUserId) {
+      showNotification("Connect wallet first!");
+      return;
+    }
 
-  const cleanName = newName.trim().replace(/[<>]/g, ""); // hindari XSS sederhana
-  gameState.name = cleanName;
-
-    // Simpan ke Firebase
-  try {
-    const userRef = doc(db, "users", currentUserId);
-    await setDoc(userRef, { name: cleanName }, { merge: true });
-    playerNameDisplay.textContent = cleanName;
-    showNotification("Name updated!");
+    const newName = prompt("Enter your new name (2-15 characters):", gameState.name || "");
     
-    // Refresh leaderboard agar nama baru muncul
-    loadAndRenderLeaderboard();
-  } catch (err) {
-    console.error("❌ Failed to update name:", err);
-    showNotification("Failed to save name!");
-  }
-}
+    if (!newName || newName.trim().length < 2 || newName.trim().length > 15) {
+      showNotification("Name must be 2-15 characters!");
+      return;
+    }
 
-// Pasang event listener
-if (editNameBtn) {
-  editNameBtn.addEventListener("click", changePlayerName);
-}
+    const cleanName = newName.trim().replace(/[<>]/g, "");
+    gameState.name = cleanName;
+
+    try {
+      const userRef = doc(db, "users", currentUserId);
+      await setDoc(userRef, { name: cleanName }, { merge: true });
+      playerNameDisplay.textContent = cleanName;
+      showNotification("Name updated!");
+      loadAndRenderLeaderboard();
+    } catch (err) {
+      console.error("❌ Failed to update name:", err);
+      showNotification("Failed to save name!");
+    }
+  }
+
+  if (editNameBtn) {
+    editNameBtn.addEventListener("click", changePlayerName);
+  }
+
   // ========================
   // --- GAME LOGIC FUNCTIONS ---
   // ========================
@@ -137,7 +132,7 @@ if (editNameBtn) {
 
     const now = Date.now();
     const elapsedSeconds = (now - gameState.lastStakeUpdate) / 1000;
-    const rewardRatePerSecond = 0.00001; // sesuaikan ekonomi
+    const rewardRatePerSecond = 0.00001;
 
     const rewards = gameState.stakedAmount * rewardRatePerSecond * elapsedSeconds;
 
@@ -227,7 +222,6 @@ if (editNameBtn) {
     setTimeout(() => floatingNumber.remove(), 1000);
   }
 
-  // Tambahkan style floating number jika belum ada
   if (!document.querySelector(".floating-number-style")) {
     const style = document.createElement("style");
     style.className = "floating-number-style";
@@ -341,7 +335,6 @@ if (editNameBtn) {
   function checkQuests() {
     if (!quests || !gameState) return;
 
-    // Quest 1: Tap 100
     if (!quests.tap100.completed) {
       const progress = (gameState.totalTaps / quests.tap100.target) * 100;
       document.getElementById("quest-tap100-progress").style.width = `${Math.min(progress, 100)}%`;
@@ -353,7 +346,6 @@ if (editNameBtn) {
       }
     }
 
-    // Quest 2: Upgrade 3
     if (!quests.upgrade3.completed) {
       const progress = (gameState.totalUpgrades / quests.upgrade3.target) * 100;
       document.getElementById("quest-upgrade3-progress").style.width = `${Math.min(progress, 100)}%`;
@@ -365,7 +357,6 @@ if (editNameBtn) {
       }
     }
 
-    // Quest 3: Stake 50
     if (!quests.stake50.completed) {
       const progress = (gameState.stakedAmount / quests.stake50.target) * 100;
       document.getElementById("quest-stake50-progress").style.width = `${Math.min(progress, 100)}%`;
@@ -455,71 +446,44 @@ if (editNameBtn) {
   // ========================
 
   async function saveGame() {
-  if (!currentUserId || !gameState) return;
-  try {
-    const gameStateRef = doc(db, "users", currentUserId);
-    // Jangan timpa `name` — biarkan nilai saat ini
-    await setDoc(gameStateRef, { 
-      ...gameState, 
-      quests,
-      lastStakeUpdate: gameState.lastStakeUpdate
-      // ❌ HAPUS baris: name: `Player-...`
-    }, { merge: true });
-  } catch (err) {
-    console.error("❌ Save error:", err);
+    if (!currentUserId || !gameState) return;
+    try {
+      const gameStateRef = doc(db, "users", currentUserId);
+      await setDoc(gameStateRef, { 
+        ...gameState, 
+        quests,
+        lastStakeUpdate: gameState.lastStakeUpdate
+        // Nama TIDAK ditimpa — dipertahankan dari gameState.name
+      }, { merge: true });
+    } catch (err) {
+      console.error("❌ Save error:", err);
+    }
   }
-}
 
   async function loadGame() {
-  if (!currentUserId) return;
-  try {
-    const gameStateRef = doc(db, "users", currentUserId);
-    const snap = await getDoc(gameStateRef);
-    const defaultState = {
-      troBalance: 0,
-      energy: 100,
-      energyMax: 100,
-      growPower: 0.1,
-      energyCost: 1,
-      rechargeRate: 1,
-      upgrades: {
-        capacity: { level: 1, cost: 5 },
-        power: { level: 1, cost: 5 },
-        speed: { level: 1, cost: 7 }
-      },
-      stakedAmount: 0,
-      lastStakeUpdate: Date.now(),
-      lastUpdate: Date.now(),
-      totalTaps: 0,
-      totalUpgrades: 0,
-      name: `Player-${currentUserId.slice(2, 8)}`
-    };
-
-    const defaultQuests = {
-      tap100: { target: 100, reward: 10, completed: false },
-      upgrade3: { target: 3, reward: 25, completed: false },
-      stake50: { target: 50, reward: 5, completed: false }
-    };
-
-    if (snap.exists()) {
-      const data = snap.data();
-      gameState = { ...defaultState, ...data };
-      quests = { ...defaultQuests, ...data.quests };
-      gameState.lastStakeUpdate = data.lastStakeUpdate || Date.now();
-    } else {
-      gameState = defaultState;
-      quests = defaultQuests;
-      await setDoc(gameStateRef, { ...gameState, quests, lastStakeUpdate: gameState.lastStakeUpdate });
-    }
-
-    // ✅ UPDATE NAMA DI SINI — SETELAH gameState SIAP
-    if (playerNameDisplay) {
-      playerNameDisplay.textContent = gameState.name || `Player-${currentUserId.slice(2, 8)}`;
-    }
-  } catch (err) {
-    console.error("❌ Load error:", err);
-  }
-}
+    if (!currentUserId) return;
+    try {
+      const gameStateRef = doc(db, "users", currentUserId);
+      const snap = await getDoc(gameStateRef);
+      const defaultState = {
+        troBalance: 0,
+        energy: 100,
+        energyMax: 100,
+        growPower: 0.1,
+        energyCost: 1,
+        rechargeRate: 1,
+        upgrades: {
+          capacity: { level: 1, cost: 5 },
+          power: { level: 1, cost: 5 },
+          speed: { level: 1, cost: 7 }
+        },
+        stakedAmount: 0,
+        lastStakeUpdate: Date.now(),
+        lastUpdate: Date.now(),
+        totalTaps: 0,
+        totalUpgrades: 0,
+        name: `Player-${currentUserId.slice(2, 8)}`
+      };
 
       const defaultQuests = {
         tap100: { target: 100, reward: 10, completed: false },
@@ -537,6 +501,11 @@ if (editNameBtn) {
         quests = defaultQuests;
         await setDoc(gameStateRef, { ...gameState, quests, lastStakeUpdate: gameState.lastStakeUpdate });
       }
+
+      // ✅ Tampilkan nama setelah gameState dimuat
+      if (playerNameDisplay) {
+        playerNameDisplay.textContent = gameState.name || `Player-${currentUserId.slice(2, 8)}`;
+      }
     } catch (err) {
       console.error("❌ Load error:", err);
     }
@@ -552,7 +521,6 @@ if (editNameBtn) {
     console.log("🐔 RoosterFi Tap Miner Initializing...");
     await loadGame();
 
-    // Pasang event listener
     tapArea.addEventListener("click", handleTap);
     document.querySelectorAll(".upgrade-card").forEach((card) => {
       card.addEventListener("click", () => buyUpgrade(card.getAttribute("data-upgrade")));
@@ -564,25 +532,17 @@ if (editNameBtn) {
     updateUI();
     checkQuests();
 
-    // Leaderboard
     loadAndRenderLeaderboard();
     setInterval(loadAndRenderLeaderboard, 30000);
-
-    // Energy recharge
     setInterval(rechargeEnergy, 1000);
-
-    // Staking reward
     setInterval(() => {
       if (gameState?.stakedAmount > 0) {
         const reward = calculateStakingRewards();
         if (reward > 0) updateUI();
       }
     }, 10000);
-
-    // Auto-save
     setInterval(saveGame, 10000);
   }
 
-  // Setup tabs sejak awal (tanpa perlu wallet)
   setupTabs();
 });
