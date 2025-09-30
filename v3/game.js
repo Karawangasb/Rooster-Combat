@@ -32,6 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- DOM ELEMENTS ---
   const connectBtn = document.getElementById("connect-btn");
   const walletAddressEl = document.getElementById("wallet-address");
+  const playerNameDisplay = document.getElementById("player-name-display");
+  const editNameBtn = document.getElementById("edit-name-btn");
 
   const balanceValue = document.getElementById("balance-value");
   const energyValue = document.getElementById("energy-value");
@@ -90,6 +92,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
   connectBtn.addEventListener("click", connectWallet);
 
+  // --- Fungsi ganti nama ---
+async function changePlayerName() {
+  if (!currentUserId) {
+    showNotification("Connect wallet first!");
+    return;
+  }
+
+  const newName = prompt("Enter your new name (2-15 characters):", gameState.name || "");
+  
+  if (!newName || newName.trim().length < 2 || newName.trim().length > 15) {
+    showNotification("Name must be 2-15 characters!");
+    return;
+  }
+
+  const cleanName = newName.trim().replace(/[<>]/g, ""); // hindari XSS sederhana
+  gameState.name = cleanName;
+
+    // Simpan ke Firebase
+  try {
+    const userRef = doc(db, "users", currentUserId);
+    await setDoc(userRef, { name: cleanName }, { merge: true });
+    playerNameDisplay.textContent = cleanName;
+    showNotification("Name updated!");
+    
+    // Refresh leaderboard agar nama baru muncul
+    loadAndRenderLeaderboard();
+  } catch (err) {
+    console.error("❌ Failed to update name:", err);
+    showNotification("Failed to save name!");
+  }
+}
+
+// Pasang event listener
+if (editNameBtn) {
+  editNameBtn.addEventListener("click", changePlayerName);
+}
   // ========================
   // --- GAME LOGIC FUNCTIONS ---
   // ========================
@@ -455,6 +493,10 @@ document.addEventListener("DOMContentLoaded", () => {
         totalUpgrades: 0,
         name: `Player-${currentUserId.slice(2, 8)}`
       };
+
+      if (playerNameDisplay) {
+  playerNameDisplay.textContent = gameState.name || `Player-${currentUserId.slice(2, 8)}`;
+}
 
       const defaultQuests = {
         tap100: { target: 100, reward: 10, completed: false },
