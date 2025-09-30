@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>RoosterFi Tap Miner</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MetaMask / EIP-1193 tidak perlu script eksternal — akan diakses via window.ethereum -->
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-crown"></i>
+                <div>
+                    <h1>RoosterFi Tap Miner</h1>
+                    <div class="wallet-address" id="wallet-address">Not connected</div>
+                </div>
+            </div>
+            <div class="wallet-info">
+                <button class="connect-btn" id="connect-btn">Connect Wallet</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+
+            <!-- HOME TAB -->
+            <div class="tab-content active" id="home-tab">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <i class="fas fa-bolt"></i>
+                        <div class="stat-value" id="energy-value">100/100</div>
+                        <div class="stat-label">ENERGY</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-coins"></i>
+                        <div class="stat-value" id="balance-value">0</div>
+                        <div class="stat-label">ROOFI COIN</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-arrow-up"></i>
+                        <div class="stat-value" id="grow-power-value">0.1</div>
+                        <div class="stat-label">TAP POWER</div>
+                    </div>
+                </div>
+
+                <div class="tap-area" id="tap-area">
+                    <div class="rooster-maskot" id="rooster-maskot">🐓</div>
+                </div>
+
+                <div class="energy-bar-container">
+                    <div class="energy-bar" id="energy-bar"></div>
+                </div>
+            </div>
+
+            <!-- UPGRADES TAB -->
+            <div class="tab-content" id="upgrades-tab">
+                <div class="section-title">
+                    <i class="fas fa-rocket"></i>
+                    <h2>Boosters</h2>
+                </div>
+                <div class="upgrade-card" data-upgrade="capacity">
+                    <div>
+                        <h3>Energy Capacity</h3>
+                        <p>Increase max energy limit</p>
+                    </div>
+                    <div>
+                        <div>Level <span id="capacity-level">1</span></div>
+                        <div class="upgrade-cost">Cost: <span id="capacity-cost">5</span> ROOFI</div>
+                    </div>
+                </div>
+                <div class="upgrade-card" data-upgrade="power">
+                    <div>
+                        <h3>Tap Power</h3>
+                        <p>Increase ROOFI per tap</p>
+                    </div>
+                    <div>
+                        <div>Level <span id="power-level">1</span></div>
+                        <div class="upgrade-cost">Cost: <span id="power-cost">5</span> ROOFI</div>
+                    </div>
+                </div>
+                <div class="upgrade-card" data-upgrade="speed">
+                    <div>
+                        <h3>Recharge Speed</h3>
+                        <p>Increase energy recharge rate</p>
+                    </div>
+                    <div>
+                        <div>Level <span id="speed-level">1</span></div>
+                        <div class="upgrade-cost">Cost: <span id="speed-cost">7</span> ROOFI</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAKING TAB -->
+            <div class="tab-content" id="staking-tab">
+                <div class="section-title">
+                    <i class="fas fa-piggy-bank"></i>
+                    <h2>Staking</h2>
+                </div>
+
+                <div class="staking-info">
+                    <p>Stake your ROOFI to earn passive income.</p>
+                    <div class="reward-estimate">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Est. Reward: <strong id="reward-estimate">0.00</strong> ROOFI/min</span>
+                    </div>
+                </div>
+
+                <div class="staking-summary">
+                    <div class="summary-card">
+                        <div class="summary-label">Your Balance</div>
+                        <div class="summary-value" id="balance-value-stake">0 ROOFI</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Staked</div>
+                        <div class="summary-value" id="staked-amount">0 ROOFI</div>
+                    </div>
+                </div>
+
+                <div class="staking-actions">
+                    <div class="input-group">
+                        <input type="number" id="stake-input" placeholder="Enter amount to stake" min="0" step="1">
+                        <button class="btn-primary" id="stake-btn">Stake</button>
+                    </div>
+                    <button class="btn-secondary" id="unstake-btn">Unstake All</button>
+                </div>
+
+                <div class="staking-benefits">
+                    <h3>Benefits</h3>
+                    <ul>
+                        <li>✅ Earn passive income every 10 seconds</li>
+                        <li>✅ Boost your tap rewards by up to +10%</li>
+                        <li>✅ Complete quests & climb the leaderboard</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- QUESTS TAB -->
+            <div class="tab-content" id="quests-tab">
+                <div class="section-title">
+                    <i class="fas fa-tasks"></i>
+                    <h2>Daily Quests</h2>
+                </div>
+                <div class="quest-card" id="quest-tap100">
+                    <div>
+                        <h3>Train Rooster</h3>
+                        <p>Tap 100 times</p>
+                        <div class="quest-progress"><div class="quest-progress-bar" id="quest-tap100-progress"></div></div>
+                    </div>
+                    <div>Reward: 10 ROOFI</div>
+                </div>
+                <div class="quest-card" id="quest-upgrade3">
+                    <div>
+                        <h3>Build Coop</h3>
+                        <p>Upgrade 3 times</p>
+                        <div class="quest-progress"><div class="quest-progress-bar" id="quest-upgrade3-progress"></div></div>
+                    </div>
+                    <div>Reward: 25 ROOFI</div>
+                </div>
+                <div class="quest-card" id="quest-stake50">
+                    <div>
+                        <h3>Arena Investor</h3>
+                        <p>Stake 50 ROOFI</p>
+                        <div class="quest-progress"><div class="quest-progress-bar" id="quest-stake50-progress"></div></div>
+                    </div>
+                    <div>Reward: 5 ROOFI</div>
+                </div>
+            </div>
+
+            <!-- LEADERBOARD TAB -->
+            <div class="tab-content" id="leaderboard-tab">
+                <div class="section-title">
+                    <i class="fas fa-trophy"></i>
+                    <h2>Leaderboard</h2>
+                </div>
+                <div class="leaderboard-list">
+                    <!-- Top 10 players will be inserted here by JavaScript -->
+                </div>
+                <div class="current-user-rank">
+                    Your Rank: <span id="user-rank">Loading...</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="tab-container">
+        <div class="tab active" data-tab="home">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="tab" data-tab="upgrades">
+            <i class="fas fa-arrow-up"></i>
+            <span>Boost</span>
+        </div>
+        <div class="tab" data-tab="staking">
+            <i class="fas fa-piggy-bank"></i>
+            <span>Stake</span>
+        </div>
+        <div class="tab" data-tab="quests">
+            <i class="fas fa-tasks"></i>
+            <span>Quests</span>
+        </div>
+        <div class="tab" data-tab="leaderboard">
+            <i class="fas fa-trophy"></i>
+            <span>Top</span>
+        </div>
+    </div>
+
+    <script type="module" src="game.js"></script>
+</body>
+</html>
