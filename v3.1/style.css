@@ -475,6 +475,37 @@ body {
     font-size: 0.95rem;
 }
 
+/* --- REFERRAL DI DALAM STAKING TAB --- */
+.referral-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.referral-code-display {
+    display: flex;
+    gap: 10px;
+    margin: 16px 0;
+    align-items: center;
+}
+
+.referral-code-display .summary-card {
+    flex: 1;
+}
+
+#my-referral-code-display {
+    color: #e53935;
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 1.1rem;
+}
+
+.referral-input-section p {
+    margin: 12px 0 8px;
+    color: white;
+    font-size: 0.95rem;
+}
+
 /* ----------------------- */
 /* --- HALAMAN LEADERBOARD --- */
 /* ----------------------- */
