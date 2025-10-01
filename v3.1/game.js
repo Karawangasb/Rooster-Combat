@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function generateReferralCode() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "ROOFI-";
+    let code = "ROO-";
     for (let i = 0; i < 5; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -147,13 +147,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Beri bonus ke referee
-      gameState.troBalance += 5000;
+      gameState.troBalance += 5;
       gameState.referredBy = code;
 
       // Update referrer
       const referrerData = referrerDoc.data();
       await setDoc(doc(db, "users", referrerId), {
-        troBalance: (referrerData.troBalance || 0) + 10000,
+        troBalance: (referrerData.troBalance || 0) + 10,
         referralsCount: (referrerData.referralsCount || 0) + 1
       }, { merge: true });
 
@@ -639,7 +639,8 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const gameStateRef = doc(db, "users", currentUserId);
       await setDoc(gameStateRef, { 
-        ...gameState, 
+        ...gameState,
+        lastUpdate: Date.now(), // ✅ Simpan waktu terakhir online
         quests,
         lastStakeUpdate: gameState.lastStakeUpdate
       }, { merge: true });
@@ -667,7 +668,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         stakedAmount: 0,
         lastStakeUpdate: Date.now(),
-        lastUpdate: Date.now(),
+        lastUpdate: Date.now(), // ✅ Tambahkan lastUpdate
         totalTaps: 0,
         totalUpgrades: 0,
         name: `Player-${currentUserId.slice(2, 8)}`,
@@ -694,6 +695,35 @@ document.addEventListener("DOMContentLoaded", () => {
         gameState = defaultState;
         quests = defaultQuests;
         await setDoc(gameStateRef, { ...gameState, quests, lastStakeUpdate: gameState.lastStakeUpdate });
+      }
+
+      // ✅ HITUNG OFFLINE EARNINGS SAAT LOAD
+      if (gameState) {
+        const now = Date.now();
+        const offlineMs = now - (gameState.lastUpdate || now);
+        const offlineSec = offlineMs / 1000;
+
+        // Staking reward offline
+        if (gameState.stakedAmount > 0) {
+          const rewardRatePerSecond = 0.00001;
+          const offlineReward = gameState.stakedAmount * rewardRatePerSecond * offlineSec;
+          if (offlineReward >= 0.01) {
+            gameState.troBalance += offlineReward;
+            gameState.lastStakeUpdate = now;
+            // Opsional: notifikasi
+            if (offlineSec > 60) {
+              setTimeout(() => showNotification(`Welcome back! +${offlineReward.toFixed(2)} ROOFI earned!`), 1000);
+            }
+          }
+        }
+
+        // Energy recharge offline (maks 1 jam)
+        const maxRechargeSec = 3600; // 1 jam
+        const actualRechargeSec = Math.min(offlineSec, maxRechargeSec);
+        const energyGained = gameState.rechargeRate * actualRechargeSec;
+        gameState.energy = Math.min(gameState.energy + energyGained, gameState.energyMax);
+
+        gameState.lastUpdate = now;
       }
 
       if (playerNameDisplay) {
@@ -739,4 +769,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   setupTabs();
+
+  // ✅ Simpan saat user tinggalkan halaman
+  window.addEventListener("beforeunload", saveGame);
 });
