@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>RoosterFi Tap Miner</title>
+    <title>RoosterFi Tap</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Web3Modal v3 - Tambahkan di akhir body -->
+<script type="module">
+  import { createWeb3Modal } from 'https://unpkg.com/@web3modal/ethereum@3.0.0/dist/index.js';
+
+  const projectId = '73ab6d99b221966ff3be824822fe8824';
+  const metadata = {
+    name: 'RoosterFi Tap Miner',
+    description: 'Tap-to-earn ROOFI on Polygon',
+    url: 'https://karawangasb.github.io',
+    icons: ['https://karawangasb.github.io/Rooster-Combat/v3/icon.png'] // Opsional
+  };
+
+  // Inisialisasi Web3Modal
+  window.web3Modal = createWeb3Modal({
+    projectId,
+    chains: [{ id: 137, token: 'MATIC' }], // Polygon
+    defaultChain: { id: 137 },
+    metadata
+  });
+</script>
     </head>
 <body>
     <div class="container">
