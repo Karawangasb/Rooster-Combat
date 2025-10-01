@@ -8,20 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- MODAL REFERRAL -->
-    <div class="modal" id="referral-modal">
-        <div class="modal-content">
-            <i class="fas fa-gift" style="font-size: 32px; color: #ffd700; margin-bottom: 12px;"></i>
-            <h3>Got an Invite Code?</h3>
-            <p>Enter your friend's referral code to get <strong>+5 ROOFI</strong>!</p>
-            <input type="text" id="referral-input" placeholder="ROO-XXXXX" maxlength="10">
-            <div>
-                <button class="btn-apply" id="apply-referral-btn">Apply Code</button>
-                <button class="btn-skip" id="skip-referral">Skip</button>
-            </div>
-        </div>
-    </div>
-
     <div class="container">
         <div class="header">
             <div class="logo">
@@ -30,9 +16,6 @@
                     <h1>RoosterFi Tap</h1>
                     <div class="player-name" id="player-name-display">Player</div> 
                     <div class="wallet-address" id="wallet-address">Not connected</div>
-                    <!-- Referral code akan muncul di sini -->
-                    <div class="referral-code" id="my-referral-code" style="display: none;"></div>
-                    <button class="copy-btn" id="copy-referral-btn" style="display: none;">📋 Copy Code</button>
                 </div>
                 <button class="edit-name-btn" id="edit-name-btn">✏️</button> 
             </div>
@@ -109,7 +92,7 @@
                 </div>
             </div>
 
-            <!-- STAKING TAB -->
+            <!-- STAKING TAB (DENGAN REFERRAL DI DALAMNYA) -->
             <div class="tab-content" id="staking-tab">
                 <div class="section-title">
                     <i class="fas fa-piggy-bank"></i>
@@ -141,6 +124,31 @@
                         <button class="btn-primary" id="stake-btn">Stake</button>
                     </div>
                     <button class="btn-secondary" id="unstake-btn">Unstake All</button>
+                </div>
+
+                <!-- REFERRAL SECTION DI DALAM STAKING -->
+                <div class="referral-section">
+                    <div class="section-title">
+                        <i class="fas fa-user-friends"></i>
+                        <h2>Invite Friends</h2>
+                    </div>
+                    <p>Earn <strong>10 ROOFI</strong> for every friend who joins with your code!</p>
+                    
+                    <div class="referral-code-display">
+                        <div class="summary-card">
+                            <div class="summary-label">Your Code</div>
+                            <div class="summary-value" id="my-referral-code-display">—</div>
+                        </div>
+                        <button class="btn-secondary" id="copy-referral-btn">Copy Code</button>
+                    </div>
+
+                    <div class="referral-input-section">
+                        <p>Got a code? Redeem it below:</p>
+                        <div class="input-group">
+                            <input type="text" id="referral-input-inline" placeholder="ROO-XXXXX" maxlength="10">
+                            <button class="btn-primary" id="apply-referral-btn-inline">Apply</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="staking-benefits">
@@ -192,27 +200,20 @@
                     <h2>Leaderboard</h2>
                 </div>
 
-                <!-- SUB-TAB TOGGLE -->
                 <div class="sub-tab-container">
                     <div class="sub-tab active" data-subtab="balance">By Balance</div>
                     <div class="sub-tab" data-subtab="referral">By Referrals</div>
                 </div>
 
-                <!-- BY BALANCE -->
                 <div class="leaderboard-view active" id="leaderboard-by-balance">
-                    <div class="leaderboard-list" id="main-leaderboard-list">
-                        <!-- Diisi oleh JS -->
-                    </div>
+                    <div class="leaderboard-list" id="main-leaderboard-list"></div>
                     <div class="current-user-rank">
                         Your Rank: <span id="user-rank">Loading...</span>
                     </div>
                 </div>
 
-                <!-- BY REFERRALS -->
                 <div class="leaderboard-view" id="leaderboard-by-referral">
-                    <div class="leaderboard-list" id="referral-leaderboard-list">
-                        <!-- Diisi oleh JS -->
-                    </div>
+                    <div class="leaderboard-list" id="referral-leaderboard-list"></div>
                     <div class="current-user-rank">
                         Your Rank: <span id="user-referral-rank">Loading...</span>
                     </div>
