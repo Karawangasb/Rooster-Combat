@@ -61,24 +61,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================
   // --- WALLET CONNECTION ---
   // ========================
+
   async function connectWallet() {
-    if (typeof window.web3Modal === "undefined") {
-      showNotification("Wallet not ready. Try again!");
+    if (typeof window.ethereum === "undefined") {
+      showNotification("Please install MetaMask!");
       return;
     }
 
     try {
-      const provider = await window.web3Modal.open();
-      const accounts = await provider.request({ method: "eth_requestAccounts" });
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
       const address = accounts[0].toLowerCase();
-
-      const chainId = await provider.request({ method: "eth_chainId" });
-      if (chainId !== "0x89") { // Polygon Mainnet
-        showNotification("Please switch to Polygon Network!");
-        return;
-      }
-
-      window.gameProvider = provider;
       currentUserId = address;
       walletAddressEl.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
       connectBtn.textContent = "Connected";
@@ -88,17 +80,17 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("✅ Wallet connected:", address);
       await initGame();
     } catch (error) {
-      console.error("❌ Connection failed:", error);
-      showNotification("Connection failed!");
+      console.error("❌ Wallet connection failed:", error);
+      showNotification("Connection rejected!");
     }
   }
 
-  // ✅ PASANG EVENT LISTENER UNTUK TOMBOL CONNECT
   connectBtn.addEventListener("click", connectWallet);
 
   // ========================
   // --- CHANGE PLAYER NAME ---
   // ========================
+
   async function changePlayerName() {
     if (!currentUserId) {
       showNotification("Connect wallet first!");
@@ -106,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const newName = prompt("Enter your new name (2-15 characters):", gameState.name || "");
+    
     if (!newName || newName.trim().length < 2 || newName.trim().length > 15) {
       showNotification("Name must be 2-15 characters!");
       return;
@@ -133,12 +126,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================
   // --- GAME LOGIC FUNCTIONS ---
   // ========================
+
   function calculateStakingRewards() {
     if (!gameState || gameState.stakedAmount <= 0) return 0;
+
     const now = Date.now();
     const elapsedSeconds = (now - gameState.lastStakeUpdate) / 1000;
     const rewardRatePerSecond = 0.00001;
+
     const rewards = gameState.stakedAmount * rewardRatePerSecond * elapsedSeconds;
+
     if (rewards >= 0.01) {
       gameState.troBalance += rewards;
       gameState.lastStakeUpdate = now;
@@ -161,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showNotification("Not enough ROOFI to stake!");
       return;
     }
+
     gameState.troBalance -= amount;
     gameState.stakedAmount += amount;
     stakeInput.value = "";
@@ -178,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showNotification("No ROOFI to unstake!");
       return;
     }
+
     calculateStakingRewards();
     gameState.troBalance += gameState.stakedAmount;
     gameState.stakedAmount = 0;
@@ -194,14 +193,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (gameState.energy >= gameState.energyCost) {
       let stakeBonus = 1 + gameState.stakedAmount / 1000;
       let effectiveGrowPower = gameState.growPower * stakeBonus;
+
       gameState.energy -= gameState.energyCost;
       gameState.troBalance += effectiveGrowPower;
       gameState.totalTaps++;
+
       showFloatingNumber(event.clientX, event.clientY, effectiveGrowPower);
+
       roosterMaskot.style.transform = "scale(0.9)";
       setTimeout(() => {
         roosterMaskot.style.transform = "scale(1)";
       }, 100);
+
       checkQuests();
       updateUI();
     } else {
@@ -256,6 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
       gameState.troBalance -= upgrade.cost;
       upgrade.level++;
       gameState.totalUpgrades++;
+
       switch (type) {
         case "capacity":
           gameState.energyMax = Math.floor(100 * 1.2 ** (upgrade.level - 1));
@@ -267,6 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
           gameState.rechargeRate = +(1 * 1.3 ** (upgrade.level - 1)).toFixed(2);
           break;
       }
+
       upgrade.cost = Math.floor(upgrade.cost * 2.5);
       showNotification(`${type} upgraded!`);
       checkQuests();
@@ -279,21 +284,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================
   // --- UI & QUESTS ---
   // ========================
+
   function updateUI() {
     if (!gameState) return;
+
     balanceValue.textContent = Math.floor(gameState.troBalance).toLocaleString();
     document.getElementById("balance-value-stake").textContent = `${Math.floor(gameState.troBalance).toLocaleString()} ROOFI`;
     energyValue.textContent = `${Math.floor(gameState.energy)}/${gameState.energyMax}`;
     growPowerValue.textContent = gameState.growPower;
+
     const energyPercentage = (gameState.energy / gameState.energyMax) * 100;
     energyBar.style.width = `${energyPercentage}%`;
+
     capacityLevel.textContent = gameState.upgrades.capacity.level;
     powerLevel.textContent = gameState.upgrades.power.level;
     speedLevel.textContent = gameState.upgrades.speed.level;
+
     capacityCost.textContent = gameState.upgrades.capacity.cost;
     powerCost.textContent = gameState.upgrades.power.cost;
     speedCost.textContent = gameState.upgrades.speed.cost;
+
     stakedAmountDisplay.textContent = `${gameState.stakedAmount.toLocaleString()} ROOFI`;
+
     const rewardPerMinute = (gameState.stakedAmount * 0.00001 * 60).toFixed(2);
     if (rewardEstimateEl) {
       rewardEstimateEl.textContent = rewardPerMinute;
@@ -322,6 +334,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function checkQuests() {
     if (!quests || !gameState) return;
+
     if (!quests.tap100.completed) {
       const progress = (gameState.totalTaps / quests.tap100.target) * 100;
       document.getElementById("quest-tap100-progress").style.width = `${Math.min(progress, 100)}%`;
@@ -332,6 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("quest-tap100").style.opacity = "0.6";
       }
     }
+
     if (!quests.upgrade3.completed) {
       const progress = (gameState.totalUpgrades / quests.upgrade3.target) * 100;
       document.getElementById("quest-upgrade3-progress").style.width = `${Math.min(progress, 100)}%`;
@@ -342,6 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("quest-upgrade3").style.opacity = "0.6";
       }
     }
+
     if (!quests.stake50.completed) {
       const progress = (gameState.stakedAmount / quests.stake50.target) * 100;
       document.getElementById("quest-stake50-progress").style.width = `${Math.min(progress, 100)}%`;
@@ -357,11 +372,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================
   // --- LEADERBOARD ---
   // ========================
+
   async function fetchLeaderboard() {
     try {
       const usersRef = collection(db, "users");
       const q = query(usersRef, orderBy("troBalance", "desc"), limit(10));
       const querySnapshot = await getDocs(q);
+
       const topPlayers = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -385,11 +402,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("troBalance", ">=", userBalance), orderBy("troBalance", "desc"));
       const querySnapshot = await getDocs(q);
+
       let rank = 1;
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         if (data.troBalance > userBalance) rank++;
       });
+
       userRank.textContent = `#${rank} • ${Math.floor(gameState.troBalance).toLocaleString()} ROOFI`;
     } catch (err) {
       console.error("❌ Rank fetch error:", err);
@@ -399,6 +418,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderLeaderboard(topPlayers) {
     const leaderboardList = document.querySelector("#leaderboard-tab .leaderboard-list");
     if (!leaderboardList) return;
+
     leaderboardList.innerHTML = "";
     topPlayers.forEach((player, index) => {
       const isCurrentUser = player.id === currentUserId;
@@ -424,6 +444,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================
   // --- FIRESTORE SAVE/LOAD ---
   // ========================
+
   async function saveGame() {
     if (!currentUserId || !gameState) return;
     try {
@@ -432,6 +453,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ...gameState, 
         quests,
         lastStakeUpdate: gameState.lastStakeUpdate
+        // Nama TIDAK ditimpa — dipertahankan dari gameState.name
       }, { merge: true });
     } catch (err) {
       console.error("❌ Save error:", err);
@@ -480,6 +502,7 @@ document.addEventListener("DOMContentLoaded", () => {
         await setDoc(gameStateRef, { ...gameState, quests, lastStakeUpdate: gameState.lastStakeUpdate });
       }
 
+      // ✅ Tampilkan nama setelah gameState dimuat
       if (playerNameDisplay) {
         playerNameDisplay.textContent = gameState.name || `Player-${currentUserId.slice(2, 8)}`;
       }
@@ -491,10 +514,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================
   // --- INIT GAME ---
   // ========================
+
   async function initGame() {
     if (!currentUserId) return;
+
     console.log("🐔 RoosterFi Tap Miner Initializing...");
     await loadGame();
+
     tapArea.addEventListener("click", handleTap);
     document.querySelectorAll(".upgrade-card").forEach((card) => {
       card.addEventListener("click", () => buyUpgrade(card.getAttribute("data-upgrade")));
@@ -502,8 +528,10 @@ document.addEventListener("DOMContentLoaded", () => {
     stakeBtn.addEventListener("click", stakeTokens);
     unstakeBtn.addEventListener("click", unstakeTokens);
     setupTabs();
+
     updateUI();
     checkQuests();
+
     loadAndRenderLeaderboard();
     setInterval(loadAndRenderLeaderboard, 30000);
     setInterval(rechargeEnergy, 1000);
