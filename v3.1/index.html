@@ -183,19 +183,39 @@
                 </div>
             </div>
 
-            <!-- LEADERBOARD TAB -->
-            <div class="tab-content" id="leaderboard-tab">
-                <div class="section-title">
-                    <i class="fas fa-trophy"></i>
-                    <h2>Leaderboard</h2>
-                </div>
-                <div class="leaderboard-list">
-                    <!-- Top 10 players will be inserted here by JavaScript -->
-                </div>
-                <div class="current-user-rank">
-                    Your Rank: <span id="user-rank">Loading...</span>
-                </div>
-            </div>
+<!-- LEADERBOARD TAB (DENGAN SUB-TAB) -->
+<div class="tab-content" id="leaderboard-tab">
+    <div class="section-title">
+        <i class="fas fa-trophy"></i>
+        <h2>Leaderboard</h2>
+    </div>
+
+    <!-- SUB-TAB TOGGLE -->
+    <div class="sub-tab-container">
+        <div class="sub-tab active" data-subtab="balance">By Balance</div>
+        <div class="sub-tab" data-subtab="referral">By Referrals</div>
+    </div>
+
+    <!-- LEADERBOARD: BY BALANCE -->
+    <div class="leaderboard-view active" id="leaderboard-by-balance">
+        <div class="leaderboard-list" id="main-leaderboard-list">
+            <!-- Diisi oleh JS -->
+        </div>
+        <div class="current-user-rank">
+            Your Rank: <span id="user-rank">Loading...</span>
+        </div>
+    </div>
+
+    <!-- LEADERBOARD: BY REFERRAL -->
+    <div class="leaderboard-view" id="leaderboard-by-referral">
+        <div class="leaderboard-list" id="referral-leaderboard-list">
+            <!-- Diisi oleh JS -->
+        </div>
+        <div class="current-user-rank">
+            Your Rank: <span id="user-referral-rank">Loading...</span>
+        </div>
+    </div>
+</div>
 
         </div>
     </div>
