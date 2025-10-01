@@ -26,7 +26,7 @@ const db = getFirestore(app);
 // Variabel global
 let gameState = null;
 let quests = null;
-let currentUserId = null; // akan diisi alamat wallet
+let currentUserId = null;
 let hasShownReferralModal = false;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -43,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const tapArea = document.getElementById("tap-area");
   const roosterMaskot = document.getElementById("rooster-maskot");
   const notification = document.getElementById("notification");
-  const userRank = document.getElementById("user-rank");
 
   const capacityLevel = document.getElementById("capacity-level");
   const powerLevel = document.getElementById("power-level");
@@ -122,20 +121,17 @@ document.addEventListener("DOMContentLoaded", () => {
   async function applyReferralCode(code) {
     if (!currentUserId || !code) return false;
 
-    // Validasi format
     if (!/^ROO-[A-Z0-9]{5}$/.test(code)) {
       showNotification("Invalid code format!");
       return false;
     }
 
-    // Cegah self-referral
     if (gameState?.referralCode === code) {
       showNotification("You can't refer yourself!");
       return false;
     }
 
     try {
-      // Cari pemain yang punya kode ini
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("referralCode", "==", code), limit(1));
       const querySnapshot = await getDocs(q);
@@ -148,24 +144,20 @@ document.addEventListener("DOMContentLoaded", () => {
       const referrerDoc = querySnapshot.docs[0];
       const referrerId = referrerDoc.id;
 
-      // Cegah double claim
       if (gameState.referredBy) {
         showNotification("Referral already used!");
         return false;
       }
 
-      // Beri bonus ke referee (pemain baru)
+      // Beri bonus ke referee
       gameState.troBalance += 5;
       gameState.referredBy = code;
 
-      // Beri bonus ke referrer
+      // Update referrer
       const referrerData = referrerDoc.data();
-      const updatedReferrerBalance = (referrerData.troBalance || 0) + 10;
-      const updatedReferralsCount = (referrerData.referralsCount || 0) + 1;
-
       await setDoc(doc(db, "users", referrerId), {
-        troBalance: updatedReferrerBalance,
-        referralsCount: updatedReferralsCount
+        troBalance: (referrerData.troBalance || 0) + 10,
+        referralsCount: (referrerData.referralsCount || 0) + 1
       }, { merge: true });
 
       showNotification("Referral applied! +5 ROOFI 🎁");
@@ -180,20 +172,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function showReferralModalIfNeeded() {
     if (hasShownReferralModal || !currentUserId || gameState?.referredBy !== undefined) return;
-    
-    // Hanya tampilkan jika akun benar-benar baru (belum tap/stake)
     if (gameState.totalTaps === 0 && gameState.troBalance <= 0) {
       referralModal.style.display = "flex";
       hasShownReferralModal = true;
     }
   }
 
-  // Event listeners untuk modal referral
   applyReferralBtn.addEventListener("click", async () => {
     const code = referralInput.value.trim().toUpperCase();
     if (await applyReferralCode(code)) {
       referralModal.style.display = "none";
-      await saveGame(); // Simpan perubahan
+      await saveGame();
     }
   });
 
@@ -206,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!gameState?.referralCode) return;
     try {
       await navigator.clipboard.writeText(gameState.referralCode);
-      showNotification("Code copied to clipboard!");
+      showNotification("Code copied!");
     } catch (err) {
       showNotification("Failed to copy!");
     }
@@ -223,7 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const newName = prompt("Enter your new name (2-15 characters):", gameState.name || "");
-    
     if (!newName || newName.trim().length < 2 || newName.trim().length > 15) {
       showNotification("Name must be 2-15 characters!");
       return;
@@ -237,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await setDoc(userRef, { name: cleanName }, { merge: true });
       playerNameDisplay.textContent = cleanName;
       showNotification("Name updated!");
-      loadAndRenderLeaderboard();
+      loadAndRenderLeaderboards();
     } catch (err) {
       console.error("❌ Failed to update name:", err);
       showNotification("Failed to save name!");
@@ -249,18 +237,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ========================
-  // --- GAME LOGIC FUNCTIONS ---
+  // --- GAME LOGIC ---
   // ========================
 
   function calculateStakingRewards() {
     if (!gameState || gameState.stakedAmount <= 0) return 0;
-
     const now = Date.now();
     const elapsedSeconds = (now - gameState.lastStakeUpdate) / 1000;
     const rewardRatePerSecond = 0.00001;
-
     const rewards = gameState.stakedAmount * rewardRatePerSecond * elapsedSeconds;
-
     if (rewards >= 0.01) {
       gameState.troBalance += rewards;
       gameState.lastStakeUpdate = now;
@@ -442,6 +427,11 @@ document.addEventListener("DOMContentLoaded", () => {
       myReferralCodeEl.style.display = "block";
       copyReferralBtn.style.display = "block";
     }
+
+    // Update my referral count
+    if (document.getElementById("my-referrals-count")) {
+      document.getElementById("my-referrals-count").textContent = gameState.referralsCount || 0;
+    }
   }
 
   function setupTabs() {
@@ -454,6 +444,29 @@ document.addEventListener("DOMContentLoaded", () => {
         tab.classList.add("active");
         const tabId = tab.getAttribute("data-tab");
         document.getElementById(`${tabId}-tab`).classList.add("active");
+      });
+    });
+  }
+
+  function setupSubTabs() {
+    const subTabs = document.querySelectorAll(".sub-tab");
+    const views = document.querySelectorAll(".leaderboard-view");
+
+    subTabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        subTabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        const type = tab.getAttribute("data-subtab");
+        views.forEach(view => {
+          view.classList.remove("active");
+          if (
+            (type === "balance" && view.id === "leaderboard-by-balance") ||
+            (type === "referral" && view.id === "leaderboard-by-referral")
+          ) {
+            view.classList.add("active");
+          }
+        });
       });
     });
   }
@@ -496,7 +509,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ========================
-  // --- LEADERBOARD ---
+  // --- LEADERBOARDS ---
   // ========================
 
   async function fetchLeaderboard() {
@@ -511,13 +524,36 @@ document.addEventListener("DOMContentLoaded", () => {
         topPlayers.push({
           id: doc.id,
           troBalance: data.troBalance || 0,
-          name: data.name || "Player",
-          referralCode: data.referralCode || ""
+          name: data.name || "Player"
         });
       });
       return topPlayers;
     } catch (err) {
       console.error("❌ Leaderboard fetch error:", err);
+      return [];
+    }
+  }
+
+  async function fetchReferralLeaderboard() {
+    try {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, orderBy("referralsCount", "desc"), limit(10));
+      const querySnapshot = await getDocs(q);
+
+      const topInviters = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if ((data.referralsCount || 0) > 0) {
+          topInviters.push({
+            id: doc.id,
+            name: data.name || "Player",
+            referralsCount: data.referralsCount || 0
+          });
+        }
+      });
+      return topInviters;
+    } catch (err) {
+      console.error("❌ Referral leaderboard fetch error:", err);
       return [];
     }
   }
@@ -536,36 +572,78 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.troBalance > userBalance) rank++;
       });
 
-      userRank.textContent = `#${rank} • ${Math.floor(gameState.troBalance).toLocaleString()} ROOFI`;
+      document.getElementById("user-rank").textContent = `#${rank} • ${Math.floor(gameState.troBalance).toLocaleString()} ROOFI`;
     } catch (err) {
       console.error("❌ Rank fetch error:", err);
     }
   }
 
-  function renderLeaderboard(topPlayers) {
-    const leaderboardList = document.querySelector("#leaderboard-tab .leaderboard-list");
-    if (!leaderboardList) return;
+  async function updateUserReferralRank() {
+    if (!currentUserId || !gameState) return;
+    try {
+      const myCount = gameState.referralsCount || 0;
+      if (myCount === 0) {
+        document.getElementById("user-referral-rank").textContent = "No invites yet";
+        return;
+      }
 
-    leaderboardList.innerHTML = "";
-    topPlayers.forEach((player, index) => {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("referralsCount", ">", myCount));
+      const querySnapshot = await getDocs(q);
+      const rank = querySnapshot.size + 1;
+
+      document.getElementById("user-referral-rank").textContent = `#${rank} • ${myCount} invites`;
+    } catch (err) {
+      console.error("❌ Referral rank error:", err);
+      document.getElementById("user-referral-rank").textContent = "—";
+    }
+  }
+
+  function renderLeaderboardByType(type, data) {
+    const listId = type === 'balance' ? 'main-leaderboard-list' : 'referral-leaderboard-list';
+    const listEl = document.getElementById(listId);
+    if (!listEl) return;
+
+    listEl.innerHTML = "";
+    if (data.length === 0) {
+      listEl.innerHTML = `<div class="empty-state">No data yet</div>`;
+      return;
+    }
+
+    data.forEach((player, index) => {
       const isCurrentUser = player.id === currentUserId;
       const item = document.createElement("div");
       item.className = `leaderboard-item ${isCurrentUser ? "current-user" : ""}`;
-      item.innerHTML = `
-        <div>
-          <span class="leaderboard-rank">${index + 1}.</span>
-          ${isCurrentUser ? "You" : (player.name || "Player")}
-        </div>
-        <div>${Math.floor(player.troBalance).toLocaleString()} ROOFI</div>
-      `;
-      leaderboardList.appendChild(item);
+      
+      if (type === 'balance') {
+        item.innerHTML = `
+          <div>
+            <span class="leaderboard-rank">${index + 1}.</span>
+            ${isCurrentUser ? "You" : (player.name || "Player")}
+          </div>
+          <div>${Math.floor(player.troBalance).toLocaleString()} ROOFI</div>
+        `;
+      } else {
+        item.innerHTML = `
+          <div>
+            <span class="leaderboard-rank">${index + 1}.</span>
+            ${isCurrentUser ? "You" : (player.name || "Player")}
+          </div>
+          <div>${player.referralsCount} invites</div>
+        `;
+      }
+      listEl.appendChild(item);
     });
   }
 
-  async function loadAndRenderLeaderboard() {
-    const topPlayers = await fetchLeaderboard();
-    renderLeaderboard(topPlayers);
+  async function loadAndRenderLeaderboards() {
+    const topBalance = await fetchLeaderboard();
+    renderLeaderboardByType('balance', topBalance);
     if (currentUserId) updateUserRank();
+
+    const topReferral = await fetchReferralLeaderboard();
+    renderLeaderboardByType('referral', topReferral);
+    if (currentUserId) updateUserReferralRank();
   }
 
   // ========================
@@ -609,7 +687,7 @@ document.addEventListener("DOMContentLoaded", () => {
         totalTaps: 0,
         totalUpgrades: 0,
         name: `Player-${currentUserId.slice(2, 8)}`,
-        referralCode: generateReferralCode(), // ✅ Generate otomatis
+        referralCode: generateReferralCode(),
         referredBy: null,
         referralsCount: 0
       };
@@ -623,7 +701,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (snap.exists()) {
         const data = snap.data();
         gameState = { ...defaultState, ...data };
-        // Pastikan referralCode tetap ada
         if (!gameState.referralCode) {
           gameState.referralCode = generateReferralCode();
         }
@@ -635,7 +712,6 @@ document.addEventListener("DOMContentLoaded", () => {
         await setDoc(gameStateRef, { ...gameState, quests, lastStakeUpdate: gameState.lastStakeUpdate });
       }
 
-      // Tampilkan nama
       if (playerNameDisplay) {
         playerNameDisplay.textContent = gameState.name || `Player-${currentUserId.slice(2, 8)}`;
       }
@@ -661,15 +737,14 @@ document.addEventListener("DOMContentLoaded", () => {
     stakeBtn.addEventListener("click", stakeTokens);
     unstakeBtn.addEventListener("click", unstakeTokens);
     setupTabs();
+    setupSubTabs(); // ✅ Sub-tab leaderboard
 
     updateUI();
     checkQuests();
-
-    // Tampilkan modal referral jika perlu
     showReferralModalIfNeeded();
 
-    loadAndRenderLeaderboard();
-    setInterval(loadAndRenderLeaderboard, 30000);
+    loadAndRenderLeaderboards();
+    setInterval(loadAndRenderLeaderboards, 30000);
     setInterval(rechargeEnergy, 1000);
     setInterval(() => {
       if (gameState?.stakedAmount > 0) {
