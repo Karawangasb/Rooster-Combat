@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- MODAL REFERRAL (muncul sekali saat connect pertama kali) -->
+    <!-- MODAL REFERRAL -->
     <div class="modal" id="referral-modal">
         <div class="modal-content">
             <i class="fas fa-gift" style="font-size: 32px; color: #ffd700; margin-bottom: 12px;"></i>
@@ -30,7 +30,7 @@
                     <h1>RoosterFi Tap</h1>
                     <div class="player-name" id="player-name-display">Player</div> 
                     <div class="wallet-address" id="wallet-address">Not connected</div>
-                    <!-- Referral Code akan muncul di sini setelah connect -->
+                    <!-- Referral code akan muncul di sini -->
                     <div class="referral-code" id="my-referral-code" style="display: none;"></div>
                     <button class="copy-btn" id="copy-referral-btn" style="display: none;">📋 Copy Code</button>
                 </div>
@@ -40,6 +40,7 @@
                 <button class="connect-btn" id="connect-btn">Connect Wallet</button>
             </div>
         </div>
+
         <div class="main-content">
             <!-- HOME TAB -->
             <div class="tab-content active" id="home-tab">
@@ -69,6 +70,7 @@
                     <div class="energy-bar" id="energy-bar"></div>
                 </div>
             </div>
+
             <!-- UPGRADES TAB -->
             <div class="tab-content" id="upgrades-tab">
                 <div class="section-title">
@@ -183,40 +185,39 @@
                 </div>
             </div>
 
-<!-- LEADERBOARD TAB (DENGAN SUB-TAB) -->
-<div class="tab-content" id="leaderboard-tab">
-    <div class="section-title">
-        <i class="fas fa-trophy"></i>
-        <h2>Leaderboard</h2>
-    </div>
+            <!-- LEADERBOARD TAB (DENGAN SUB-TAB) -->
+            <div class="tab-content" id="leaderboard-tab">
+                <div class="section-title">
+                    <i class="fas fa-trophy"></i>
+                    <h2>Leaderboard</h2>
+                </div>
 
-    <!-- SUB-TAB TOGGLE -->
-    <div class="sub-tab-container">
-        <div class="sub-tab active" data-subtab="balance">By Balance</div>
-        <div class="sub-tab" data-subtab="referral">By Referrals</div>
-    </div>
+                <!-- SUB-TAB TOGGLE -->
+                <div class="sub-tab-container">
+                    <div class="sub-tab active" data-subtab="balance">By Balance</div>
+                    <div class="sub-tab" data-subtab="referral">By Referrals</div>
+                </div>
 
-    <!-- LEADERBOARD: BY BALANCE -->
-    <div class="leaderboard-view active" id="leaderboard-by-balance">
-        <div class="leaderboard-list" id="main-leaderboard-list">
-            <!-- Diisi oleh JS -->
-        </div>
-        <div class="current-user-rank">
-            Your Rank: <span id="user-rank">Loading...</span>
-        </div>
-    </div>
+                <!-- BY BALANCE -->
+                <div class="leaderboard-view active" id="leaderboard-by-balance">
+                    <div class="leaderboard-list" id="main-leaderboard-list">
+                        <!-- Diisi oleh JS -->
+                    </div>
+                    <div class="current-user-rank">
+                        Your Rank: <span id="user-rank">Loading...</span>
+                    </div>
+                </div>
 
-    <!-- LEADERBOARD: BY REFERRAL -->
-    <div class="leaderboard-view" id="leaderboard-by-referral">
-        <div class="leaderboard-list" id="referral-leaderboard-list">
-            <!-- Diisi oleh JS -->
-        </div>
-        <div class="current-user-rank">
-            Your Rank: <span id="user-referral-rank">Loading...</span>
-        </div>
-    </div>
-</div>
-
+                <!-- BY REFERRALS -->
+                <div class="leaderboard-view" id="leaderboard-by-referral">
+                    <div class="leaderboard-list" id="referral-leaderboard-list">
+                        <!-- Diisi oleh JS -->
+                    </div>
+                    <div class="current-user-rank">
+                        Your Rank: <span id="user-referral-rank">Loading...</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
