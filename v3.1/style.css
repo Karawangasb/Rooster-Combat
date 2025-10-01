@@ -517,6 +517,37 @@ body {
     font-weight: bold;
 }
 
+/* Sub-tab toggle */
+.sub-tab-container {
+    display: flex;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    margin: 16px 0;
+    overflow: hidden;
+}
+.sub-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #aaa;
+    transition: all 0.2s;
+}
+.sub-tab.active {
+    background: #ffd700;
+    color: #1e1e2e;
+    border-radius: 12px;
+}
+
+/* Leaderboard view */
+.leaderboard-view {
+    display: none;
+}
+.leaderboard-view.active {
+    display: block;
+}
 /* ------------------- */
 /* --- NOTIFIKASI --- */
 /* ------------------- */
