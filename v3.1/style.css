@@ -1,0 +1,559 @@
+/* ------------------------- */
+/* --- GAYA DASAR & FONT --- */
+/* ------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    /* Gradient merah → oranye → emas (seperti matahari terbenam di arena ayam) */
+    background: linear-gradient(135deg, #e53935, #f57c00, #fbc02d);
+    color: white;
+    min-height: 100vh;
+    padding-bottom: 90px;
+}
+
+.container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+/* ------------------- */
+/* --- BAGIAN HEADER --- */
+/* ------------------- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo i {
+    font-size: 28px;
+    color: #fbc02d; /* emas */
+}
+
+.logo h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+}
+
+.wallet-address {
+    font-size: 12px;
+    opacity: 0.9;
+    color: #ffe082;
+}
+
+.connect-btn {
+    background: #fbc02d; /* emas */
+    color: #e53935; /* merah gelap untuk teks */
+    border: none;
+    padding: 8px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+    font-size: 14px;
+}
+
+.connect-btn:active {
+    transform: scale(0.95);
+}
+
+.player-name {
+    font-size: 14px;
+    color: #fbc02d;
+    margin-top: 2px;
+}
+
+.edit-name-btn {
+    background: none;
+    border: none;
+    color: #ffe082;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.edit-name-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ------------------------ */
+/* --- KONTEN UTAMA & TAB --- */
+/* ------------------------ */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: #fff9c4;
+}
+
+/* ---------------------------- */
+/* --- HALAMAN UTAMA (HOME/TAP) --- */
+/* ---------------------------- */
+.stats-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+    flex: 1;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-card i {
+    font-size: 20px;
+    color: #fbc02d;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+
+.stat-label {
+    font-size: 10px;
+    opacity: 0.85;
+    color: #ffe082;
+}
+
+.tap-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 250px;
+    cursor: pointer;
+    position: relative;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+}
+
+.rooster-maskot {
+    font-size: 80px;
+    transition: transform 0.1s ease;
+    text-shadow: 0 0 10px rgba(251, 192, 45, 0.7);
+}
+
+.tap-area:active .rooster-maskot {
+    transform: scale(0.9);
+}
+
+.energy-bar-container {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 3px;
+    margin-top: 20px;
+    border: 1px solid rgba(251, 192, 45, 0.3);
+}
+
+.energy-bar {
+    height: 10px;
+    background: linear-gradient(90deg, #ff9800, #fbc02d);
+    border-radius: 7px;
+    width: 100%;
+    transition: width 0.5s;
+}
+
+/* ------------------------------------- */
+/* --- KARTU UPGRADE, STAKING, QUEST --- */
+/* ------------------------------------- */
+.upgrade-card, .quest-card, .staking-card, .leaderboard-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    border: 1px solid #e53935;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s;
+}
+
+.upgrade-card:active {
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.upgrade-card h3, .quest-card h3 {
+    margin-bottom: 3px;
+    font-size: 1em;
+    color: #fbc02d;
+}
+
+.upgrade-card p, .quest-card p {
+    font-size: 0.8em;
+    opacity: 0.85;
+    color: #ffe082;
+}
+
+.upgrade-cost {
+    font-size: 14px;
+    color: #ffd700;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.quest-progress {
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.quest-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #e53935, #f57c00);
+    border-radius: 3px;
+    transition: width 0.5s;
+    width: 0%;
+}
+
+/* ======================
+      STAKING TAB STYLE
+   ====================== */
+
+#staking-tab {
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+#staking-tab .section-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#staking-tab .section-title h2 {
+    margin: 8px 0 0;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.staking-info {
+    background: rgba(229, 57, 53, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid rgba(229, 57, 53, 0.3);
+}
+
+.staking-info p {
+    margin: 0 0 10px;
+    color: white;
+    font-size: 1rem;
+}
+
+.reward-estimate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-weight: 600;
+    color: white;
+}
+
+.reward-estimate i {
+    color: #fbc02d;
+}
+
+/* Summary Cards */
+.staking-summary {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.summary-card {
+    flex: 1;
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.summary-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.summary-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #e53935;
+}
+
+/* Action Buttons */
+.staking-actions {
+    margin-bottom: 24px;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+#stake-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#stake-input:focus {
+    border-color: #e53935;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.btn-primary {
+    background: #e53935;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #d32f2f;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #fbc02d;
+    color: #e53935;
+}
+
+.btn-secondary:hover {
+    background: #f9a825;
+    transform: translateY(-2px);
+}
+
+/* Benefits */
+.staking-benefits h3 {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    color: white;
+}
+
+.staking-benefits ul {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.staking-benefits li {
+    margin-bottom: 8px;
+    color: white;
+    font-size: 0.95rem;
+}
+
+/* ----------------------- */
+/* --- HALAMAN LEADERBOARD --- */
+/* ----------------------- */
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    font-size: 16px;
+    border: 1px solid rgba(251, 192, 45, 0.2);
+}
+
+.leaderboard-item.current-user {
+    background: rgba(229, 57, 53, 0.25);
+    border-left: 3px solid #e53935;
+    font-weight: bold;
+    color: #fbc02d;
+}
+
+.leaderboard-rank {
+    font-weight: bold;
+    color: #fbc02d;
+    margin-right: 8px;
+}
+
+.current-user-rank {
+    text-align: center;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fbc02d;
+    font-weight: bold;
+}
+
+/* ------------------- */
+/* --- NOTIFIKASI --- */
+/* ------------------- */
+.notification {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
+    pointer-events: none;
+    font-weight: 600;
+    text-align: center;
+    max-width: 80%;
+    word-break: break-word;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+/* -------------------------------- */
+/* --- MENU NAVIGASI BAWAH --- */
+/* -------------------------------- */
+.tab-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    margin: 10px;
+    border-radius: 20px;
+    z-index: 1000;
+    box-shadow: 0 -2px 15px rgba(0,0,0,0.4);
+    padding: 5px;
+}
+
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 5px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.tab i {
+    font-size: 20px;
+}
+
+.tab span {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.tab.active {
+    background: rgba(229, 57, 53, 0.6); /* merah transparan */
+    color: white;
+}
+
+.tab:not(.active) {
+    color: #ffe082;
+    opacity: 0.85;
+}
+
+/* ------------------- */
+/* --- RESPONSIVE --- */
+/* ------------------- */
+@media (max-width: 400px) {
+    .container {
+        padding: 10px;
+    }
+
+    .header {
+        padding: 10px;
+    }
+
+    .logo h1 {
+        font-size: 16px;
+    }
+
+    .tap-area {
+        height: 220px;
+    }
+
+    .rooster-maskot {
+        font-size: 70px;
+    }
+}
