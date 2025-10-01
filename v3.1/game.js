@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function generateReferralCode() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "ROO-";
+    let code = "ROOFI-";
     for (let i = 0; i < 5; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -147,13 +147,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Beri bonus ke referee
-      gameState.troBalance += 5;
+      gameState.troBalance += 5000;
       gameState.referredBy = code;
 
       // Update referrer
       const referrerData = referrerDoc.data();
       await setDoc(doc(db, "users", referrerId), {
-        troBalance: (referrerData.troBalance || 0) + 10,
+        troBalance: (referrerData.troBalance || 0) + 10000,
         referralsCount: (referrerData.referralsCount || 0) + 1
       }, { merge: true });
 
