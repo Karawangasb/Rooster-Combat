@@ -61,32 +61,44 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================
   // --- WALLET CONNECTION ---
   // ========================
+async function connectWallet() {
+  if (typeof window.web3Modal === "undefined") {
+    showNotification("Wallet not ready. Try again!");
+    return;
+  }
 
-  async function connectWallet() {
-    if (typeof window.ethereum === "undefined") {
-      showNotification("Please install MetaMask!");
+  try {
+    // Buka modal koneksi
+    const provider = await window.web3Modal.open();
+    
+    // Ambil akun
+    const accounts = await provider.request({ method: "eth_requestAccounts" });
+    const address = accounts[0].toLowerCase();
+
+    // Verifikasi jaringan Polygon
+    const chainId = await provider.request({ method: "eth_chainId" });
+    if (chainId !== "0x89") { // 0x89 = Polygon Mainnet
+      showNotification("Please switch to Polygon Network!");
       return;
     }
 
-    try {
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      const address = accounts[0].toLowerCase();
-      currentUserId = address;
-      walletAddressEl.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
-      connectBtn.textContent = "Connected";
-      connectBtn.disabled = true;
-      connectBtn.style.opacity = "0.7";
+    // Simpan provider global (untuk transaksi nanti)
+    window.gameProvider = provider;
 
-      console.log("✅ Wallet connected:", address);
-      await initGame();
-    } catch (error) {
-      console.error("❌ Wallet connection failed:", error);
-      showNotification("Connection rejected!");
-    }
+    currentUserId = address;
+    walletAddressEl.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
+    connectBtn.textContent = "Connected";
+    connectBtn.disabled = true;
+    connectBtn.style.opacity = "0.7";
+
+    console.log("✅ Wallet connected:", address);
+    await initGame();
+  } catch (error) {
+    console.error("❌ Connection failed:", error);
+    showNotification("Connection failed!");
   }
-
-  connectBtn.addEventListener("click", connectWallet);
-
+}
+  
   // ========================
   // --- CHANGE PLAYER NAME ---
   // ========================
