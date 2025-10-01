@@ -207,31 +207,6 @@
             <span>Top</span>
         </div>
     </div>
-
-        <!-- Web3Modal HARUS dimuat SEBELUM game.js -->
-    <script type="module">
-      import { createWeb3Modal } from 'https://unpkg.com/@web3modal/ethereum@3.0.0/dist/index.js';
-
-      const projectId = '73ab6d99b221966ff3be824822fe8824';
-      const metadata = {
-        name: 'RoosterFi Tap Miner',
-        description: 'Tap-to-earn ROOFI on Polygon',
-        url: 'https://karawangasb.github.io/Rooster-Combat/v3/',
-        icons: []
-      };
-
-      // Tunggu DOM siap, lalu inisialisasi
-      document.addEventListener('DOMContentLoaded', () => {
-        window.web3Modal = createWeb3Modal({
-          projectId,
-          chains: [{ id: 137, token: 'MATIC' }],
-          defaultChain: { id: 137 },
-          metadata
-        });
-      });
-    </script>
-
-    <!-- Baru muat game.js -->
-    <script type="module" src="game.js"></script>
+   <script type="module" src="game.js"></script>
 </body>
 </html>
