@@ -27,7 +27,6 @@ const db = getFirestore(app);
 let gameState = null;
 let quests = null;
 let currentUserId = null;
-let hasShownReferralModal = false;
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- DOM ELEMENTS ---
@@ -58,13 +57,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const stakedAmountDisplay = document.getElementById("staked-amount");
   const rewardEstimateEl = document.getElementById("reward-estimate");
 
-  // --- REFERRAL ELEMENTS ---
-  const referralModal = document.getElementById("referral-modal");
-  const referralInput = document.getElementById("referral-input");
-  const applyReferralBtn = document.getElementById("apply-referral-btn");
-  const skipReferralBtn = document.getElementById("skip-referral");
-  const myReferralCodeEl = document.getElementById("my-referral-code");
+  // --- REFERRAL ELEMENTS (INLINE DI STAKING) ---
+  const myReferralCodeDisplay = document.getElementById("my-referral-code-display");
   const copyReferralBtn = document.getElementById("copy-referral-btn");
+  const referralInputInline = document.getElementById("referral-input-inline");
+  const applyReferralInlineBtn = document.getElementById("apply-referral-btn-inline");
 
   // ========================
   // --- UTILS ---
@@ -115,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
   connectBtn.addEventListener("click", connectWallet);
 
   // ========================
-  // --- REFERRAL SYSTEM ---
+  // --- REFERRAL SYSTEM (INLINE) ---
   // ========================
 
   async function applyReferralCode(code) {
@@ -170,36 +167,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  async function showReferralModalIfNeeded() {
-    if (hasShownReferralModal || !currentUserId || gameState?.referredBy !== undefined) return;
-    if (gameState.totalTaps === 0 && gameState.troBalance <= 0) {
-      referralModal.style.display = "flex";
-      hasShownReferralModal = true;
-    }
+  // Event: Apply referral dari input inline
+  if (applyReferralInlineBtn) {
+    applyReferralInlineBtn.addEventListener("click", async () => {
+      const code = referralInputInline.value.trim().toUpperCase();
+      if (await applyReferralCode(code)) {
+        referralInputInline.value = "";
+        applyReferralInlineBtn.disabled = true;
+        applyReferralInlineBtn.textContent = "Claimed";
+      }
+    });
   }
 
-  applyReferralBtn.addEventListener("click", async () => {
-    const code = referralInput.value.trim().toUpperCase();
-    if (await applyReferralCode(code)) {
-      referralModal.style.display = "none";
-      await saveGame();
-    }
-  });
-
-  skipReferralBtn.addEventListener("click", () => {
-    referralModal.style.display = "none";
-    hasShownReferralModal = true;
-  });
-
-  copyReferralBtn.addEventListener("click", async () => {
-    if (!gameState?.referralCode) return;
-    try {
-      await navigator.clipboard.writeText(gameState.referralCode);
-      showNotification("Code copied!");
-    } catch (err) {
-      showNotification("Failed to copy!");
-    }
-  });
+  // Event: Copy referral code
+  if (copyReferralBtn) {
+    copyReferralBtn.addEventListener("click", async () => {
+      if (!gameState?.referralCode) return;
+      try {
+        await navigator.clipboard.writeText(gameState.referralCode);
+        showNotification("Code copied!");
+      } catch (err) {
+        showNotification("Failed to copy!");
+      }
+    });
+  }
 
   // ========================
   // --- CHANGE PLAYER NAME ---
@@ -421,16 +412,9 @@ document.addEventListener("DOMContentLoaded", () => {
       rewardEstimateEl.textContent = rewardPerMinute;
     }
 
-    // Tampilkan referral code
-    if (gameState.referralCode) {
-      myReferralCodeEl.textContent = gameState.referralCode;
-      myReferralCodeEl.style.display = "block";
-      copyReferralBtn.style.display = "block";
-    }
-
-    // Update my referral count
-    if (document.getElementById("my-referrals-count")) {
-      document.getElementById("my-referrals-count").textContent = gameState.referralsCount || 0;
+    // Tampilkan referral code di tab stake
+    if (myReferralCodeDisplay) {
+      myReferralCodeDisplay.textContent = gameState.referralCode || "—";
     }
   }
 
@@ -737,11 +721,10 @@ document.addEventListener("DOMContentLoaded", () => {
     stakeBtn.addEventListener("click", stakeTokens);
     unstakeBtn.addEventListener("click", unstakeTokens);
     setupTabs();
-    setupSubTabs(); // ✅ Sub-tab leaderboard
+    setupSubTabs();
 
     updateUI();
     checkQuests();
-    showReferralModalIfNeeded();
 
     loadAndRenderLeaderboards();
     setInterval(loadAndRenderLeaderboards, 30000);
